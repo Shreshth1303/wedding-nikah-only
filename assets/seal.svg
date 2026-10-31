@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sealGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BF953F"/>
+      <stop offset="20%" stop-color="#FCF6BA"/>
+      <stop offset="50%" stop-color="#B38728"/>
+      <stop offset="80%" stop-color="#FBF5B7"/>
+      <stop offset="100%" stop-color="#AA771C"/>
+    </linearGradient>
+    <radialGradient id="sealWax" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FAF5EE"/>
+      <stop offset="50%" stop-color="#F2E8DC"/>
+      <stop offset="100%" stop-color="#E5D7C5"/>
+    </radialGradient>
+    <filter id="sealShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#2C2523" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#D4AF37" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Seal Container with subtle drop shadow -->
+  <g filter="url(#sealShadow)">
+    <!-- Scalloped 16-lobe circular rosette base -->
+    <circle cx="160" cy="160" r="145" fill="url(#sealGold)"/>
+    <circle cx="160" cy="160" r="140" fill="#2C2523"/>
+    
+    <!-- Outer delicate gear/bead border -->
+    <circle cx="160" cy="160" r="135" fill="none" stroke="url(#sealGold)" stroke-width="1.5" stroke-dasharray="3 4"/>
+    
+    <!-- Concentric vellum medallion inset -->
+    <circle cx="160" cy="160" r="126" fill="url(#sealWax)"/>
+    <circle cx="160" cy="160" r="122" fill="none" stroke="#D4AF37" stroke-width="1.2"/>
+    <circle cx="160" cy="160" r="118" fill="none" stroke="#2C2523" stroke-width="0.6" stroke-opacity="0.5"/>
+
+    <!-- 8-Pointed Star Motif in Background -->
+    <g transform="translate(160, 160) scale(1.1)" stroke="url(#sealGold)" stroke-width="0.8" fill="none" opacity="0.45">
+      <rect x="-65" y="-65" width="130" height="130" rx="4"/>
+      <rect x="-65" y="-65" width="130" height="130" rx="4" transform="rotate(45)"/>
+    </g>
+
+    <!-- Top & Bottom Arc Text (Manuscript Inscription) -->
+    <!-- Curved path for top text -->
+    <path id="topArc" d="M 46 160 A 114 114 0 0 1 274 160" fill="none"/>
+    <text font-family="'Cinzel', 'Cormorant Garamond', serif" font-size="9" letter-spacing="4" fill="#6B5843">
+      <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+        SACRED PRAYERS &amp; BLESSINGS
+      </textPath>
+    </text>
+
+    <!-- Curved path for bottom text -->
+    <path id="bottomArc" d="M 274 160 A 114 114 0 0 1 46 160" fill="none"/>
+    <text font-family="'Cinzel', 'Cormorant Garamond', serif" font-size="8.5" letter-spacing="4" fill="#6B5843">
+      <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">
+        JASSIM &amp; SHIFA · NASHIK 2027
+      </textPath>
+    </text>
+
+    <!-- Calligraphy Centerpiece: جَزَاكُمُ اللَّهُ خَيْرًا (JazakAllahu Khaira) -->
+    <g transform="translate(160, 155)">
+      <!-- Central Calligraphy Text styled with Amiri font look & calligraphic accents -->
+      <text x="0" y="5" 
+            font-family="'Amiri', 'Traditional Arabic', 'Scheherazade New', serif" 
+            font-size="44" 
+            font-weight="bold" 
+            text-anchor="middle" 
+            fill="#2C2523"
+            letter-spacing="0">
+        جَزَاكُمُ اللَّهُ خَيْرًا
+      </text>
+
+      <!-- English Sub-Inscription -->
+      <text x="0" y="36" 
+            font-family="'Cormorant Garamond', Georgia, serif" 
+            font-size="12" 
+            font-style="italic" 
+            text-anchor="middle" 
+            fill="#5E4E3E">
+        "May Allah reward you with goodness"
+      </text>
+
+      <!-- Tiny Golden Crescent and Star at Top of Calligraphy -->
+      <g transform="translate(0, -32) scale(0.65)">
+        <path d="M 4 -12 A 10 10 0 1 0 4 8 A 8 8 0 1 1 4 -12 Z" fill="url(#sealGold)"/>
+        <polygon points="7,-2 9,-5 12,-5 10,-8 11,-11 8,-9 5,-11 6,-8 4,-5 7,-5" fill="url(#sealGold)"/>
+      </g>
+      
+      <!-- Decorative Arabesque Divider -->
+      <g stroke="url(#sealGold)" stroke-width="1" fill="none">
+        <line x1="-55" y1="46" x2="-15" y2="46"/>
+        <circle cx="0" cy="46" r="3" fill="url(#sealGold)"/>
+        <circle cx="-6" cy="46" r="1.5" fill="url(#sealGold)"/>
+        <circle cx="6" cy="46" r="1.5" fill="url(#sealGold)"/>
+        <line x1="15" y1="46" x2="55" y2="46"/>
+      </g>
+    </g>
+  </g>
+</svg>
+

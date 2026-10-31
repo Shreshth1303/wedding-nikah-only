@@ -1,0 +1,20 @@
+{
+  "name": "wedding-nikah-only",
+  "version": "1.0.0",
+  "description": "Moorish Architectural Manuscript Digital Invitation exclusively for the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve -l 3000 .",
+    "start": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "nikah",
+    "wedding-invitation",
+    "islamic-manuscript",
+    "moorish-architecture",
+    "jassim-and-shifa"
+  ],
+  "author": "Hashim & Khan Families",
+  "license": "UNLICENSED"
+}
+

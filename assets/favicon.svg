@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#FDF6C7"/>
+      <stop offset="100%" stop-color="#AA771C"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2C2523"/>
+      <stop offset="100%" stop-color="#1A1615"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle/shield -->
+  <rect width="64" height="64" rx="14" fill="url(#bgGrad)"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" stroke-opacity="0.8"/>
+  <rect x="5" y="5" width="54" height="54" rx="9" fill="none" stroke="url(#goldGrad)" stroke-width="0.5" stroke-dasharray="2,2" stroke-opacity="0.5"/>
+  
+  <!-- Moorish Pointed Arch Silhouette in Center -->
+  <path d="M 18 50 L 18 30 C 18 20, 24 16, 32 10 C 40 16, 46 20, 46 30 L 46 50 Z" 
+        fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linejoin="round"/>
+        
+  <!-- Delicate Crescent & 8-point Star inside Arch -->
+  <path d="M 34 22 A 7 7 0 1 0 34 36 A 5.5 5.5 0 1 1 34 22 Z" fill="url(#goldGrad)"/>
+  
+  <!-- Eight-pointed star (Khatam) -->
+  <g transform="translate(36, 27) scale(0.65)">
+    <polygon points="0,-6 1.8,-1.8 6,0 1.8,1.8 0,6 -1.8,1.8 -6,0 -1.8,-1.8" fill="#FDF6C7"/>
+    <polygon points="-4.2,-4.2 0,-2.5 4.2,-4.2 2.5,0 4.2,4.2 0,2.5 -4.2,4.2 -2.5,0" fill="#D4AF37"/>
+  </g>
+  
+  <!-- Subtle decorative base line -->
+  <line x1="22" y1="46" x2="42" y2="46" stroke="url(#goldGrad)" stroke-width="1" stroke-linecap="round"/>
+</svg>
+

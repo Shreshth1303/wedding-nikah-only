@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <!-- Girih 8-Fold Geometric Star Pattern -->
+    <pattern id="girihTile" width="120" height="120" patternUnits="userSpaceOnUse">
+      <!-- Fine background guide grid -->
+      <g stroke="#CBB994" stroke-width="0.75" fill="none" opacity="0.65">
+        <!-- Center Star (8-point) -->
+        <!-- Square 1 -->
+        <rect x="42.43" y="42.43" width="35.14" height="35.14" />
+        <!-- Square 2 rotated 45 deg -->
+        <rect x="42.43" y="42.43" width="35.14" height="35.14" transform="rotate(45 60 60)" />
+        
+        <!-- Outer octagon radiating lines -->
+        <line x1="60" y1="0" x2="60" y2="42.43" />
+        <line x1="60" y1="77.57" x2="60" y2="120" />
+        <line x1="0" y1="60" x2="42.43" y2="60" />
+        <line x1="77.57" y1="60" x2="120" y2="60" />
+        
+        <!-- Diagonal radiating lines -->
+        <line x1="0" y1="0" x2="47.5" y2="47.5" />
+        <line x1="120" y1="0" x2="72.5" y2="47.5" />
+        <line x1="0" y1="120" x2="47.5" y2="72.5" />
+        <line x1="120" y1="120" x2="72.5" y2="72.5" />
+        
+        <!-- Corner 8-point stars (quartered at corners) -->
+        <!-- Corner 0,0 -->
+        <polygon points="0,0 12,5 17,17 5,12" />
+        <polygon points="0,0 24,0 17,17 0,24" />
+        <circle cx="0" cy="0" r="14" />
+        
+        <!-- Corner 120,0 -->
+        <circle cx="120" cy="0" r="14" />
+        
+        <!-- Corner 0,120 -->
+        <circle cx="0" cy="120" r="14" />
+        
+        <!-- Corner 120,120 -->
+        <circle cx="120" cy="120" r="14" />
+        
+        <!-- Intermediate kites and hex-stars -->
+        <polygon points="60,20 70,35 60,42.43 50,35" />
+        <polygon points="60,100 70,85 60,77.57 50,85" />
+        <polygon points="20,60 35,70 42.43,60 35,50" />
+        <polygon points="100,60 85,70 77.57,60 85,50" />
+        
+        <!-- Central rosette core -->
+        <circle cx="60" cy="60" r="8" stroke="#D4AF37" stroke-width="0.8" />
+        <circle cx="60" cy="60" r="2.5" fill="#D4AF37" opacity="0.6"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="120" height="120" fill="url(#girihTile)"/>
+</svg>
+
