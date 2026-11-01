@@ -18,8 +18,8 @@
   <meta property="og:image" content="assets/favicon.svg">
 
   <!-- Dynamic SVG Favicon featuring Gold Crescent & Moorish Arch Motif -->
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="apple-touch-icon" href="assets/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2027">
+  <link rel="apple-touch-icon" href="assets/favicon.svg?v=2027">
 
   <!-- Google Fonts: Amiri (Arabic), Cinzel (Royal Display), Cormorant Garamond (Manuscript Serif), Plus Jakarta Sans (UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,26 +27,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Core Architectural Stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=2027">
 </head>
 
 <body>
+
+  <!-- Melodious Ambience Audio Stream & Native Preload -->
+  <audio id="wedding-audio-element" 
+         src="assets/audio/chopin-nocturne.mp3" 
+         preload="auto" 
+         loop 
+         playsinline 
+         webkit-playsinline 
+         autoplay 
+         style="display: none;"></audio>
 
   <!-- ========================================================================
        TOP SANCTUARY NAVIGATION & AMBIENCE BAR
        ======================================================================== -->
   <header class="sanctuary-nav" role="banner">
-    <a href="#" class="nav-monogram" aria-label="Jassim &amp; Shifa Nikah Sanctuary">
+    <a href="index.html" class="nav-monogram" aria-label="Jassim &amp; Shifa Nikah Sanctuary">
       <img src="assets/favicon.svg" alt="Moorish Arch &amp; Crescent Crest" class="nav-monogram-icon" width="28" height="28">
       <span class="nav-monogram-text">Jassim &amp; Shifa</span>
     </a>
 
+    <!-- Clean In-Page Section Navigation (Zero broken/404 links) -->
+    <nav class="nav-menu" aria-label="Invitation Navigation">
+      <a href="#ceremony" class="nav-link">The Union</a>
+      <a href="#venue" class="nav-link">Venue &amp; Timings</a>
+      <a href="#countdown" class="nav-link">Countdown</a>
+    </nav>
+
     <div class="nav-actions">
-      <!-- Meditative Sacred Ambience Toggle (Pure Web Audio API Synthesizer) -->
-      <button id="btn-audio-toggle" class="audio-toggle-btn" type="button" aria-label="Toggle sacred ambience audio" title="Acoustic meditative ambience (Muted by default)">
-        <span class="audio-pulse" aria-hidden="true"></span>
-        <span id="audio-label">Sacred Ambience</span>
-      </button>
+      <!-- Melodious Background Music Master Controller -->
+      <div id="music-controller-container"></div>
 
       <!-- Archival Keepsake Print Button -->
       <button id="btn-print-invitation" class="print-btn" type="button" aria-label="Print or save invitation as PDF">
@@ -121,7 +135,7 @@
               <section class="sacred-header">
                 <!-- Vector Bismillah Calligraphic Medallion -->
                 <div class="bismillah-crest-wrapper">
-                  <img src="assets/bismillah.svg" 
+                  <img src="assets/bismillah.svg?v=2027" 
                        alt="Bismillah al-Rahman al-Rahim (In the name of Allah, the Most Beneficent, the Most Merciful)" 
                        class="bismillah-svg-embed" 
                        width="540" 
@@ -151,7 +165,7 @@
               <!-- ==========================================================
                    2. FORMAL PARENTAGE & PROCLAMATION
                    ========================================================== -->
-              <section class="proclamation-section">
+              <section class="proclamation-section" id="ceremony">
                 <p class="invitation-preamble">
                   Under the grace and benevolence of the Almighty Allah,
                 </p>
@@ -202,7 +216,7 @@
               <!-- ==========================================================
                    3. VENUE SANCTUARY CARD
                    ========================================================== -->
-              <section class="venue-sanctuary-container" aria-label="Ceremony and Venue Details">
+              <section class="venue-sanctuary-container" id="venue" aria-label="Ceremony and Venue Details">
                 <div class="sanctuary-card">
                   <!-- Date Banner -->
                   <div class="card-header-date">
@@ -295,7 +309,7 @@
                   </div>
 
                   <!-- Countdown Clock to Sacred Union -->
-                  <div class="countdown-box" aria-label="Countdown to Nikah">
+                  <div class="countdown-box" id="countdown" aria-label="Countdown to Nikah">
                     <div class="countdown-title">Counting Down to the Sacred Union</div>
                     <div class="countdown-grid">
                       <div class="count-unit">
@@ -343,8 +357,10 @@
 
   </main>
 
+  <!-- Melodious Background Audio Controller Engine -->
+  <script src="js/audio-controller.js?v=2029"></script>
   <!-- Interactive Logic Engine -->
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=2029"></script>
 </body>
 </html>
 

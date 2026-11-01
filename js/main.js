@@ -7,7 +7,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   initCountdown();
   initCalendarActions();
-  initAmbienceSynthesizer();
   initClipboardHelpers();
 });
 
@@ -148,133 +147,7 @@ function generateICSFile(event) {
   document.body.removeChild(link);
 }
 
-/* ==========================================================================
-   3. MEDITATIVE SACRED AMBIENCE (PURE WEB AUDIO SYNTHESIZER)
-   No external files needed, no 404s, works offline!
-   Harmonic 432Hz D-minor chord + gentle shimmer
-   ========================================================================== */
-function initAmbienceSynthesizer() {
-  const toggleBtn = document.getElementById('btn-audio-toggle');
-  const labelEl = document.getElementById('audio-label');
-  if (!toggleBtn) return;
 
-  let audioCtx = null;
-  let isPlaying = false;
-  let masterGain = null;
-  let oscillators = [];
-  let intervalId = null;
-
-  function startAmbience() {
-    try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      audioCtx = new AudioContextClass();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-      // Gentle fade in
-      masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 3);
-      masterGain.connect(audioCtx.destination);
-
-      // Sacred Solfeggio & D minor meditative harmonic frequencies
-      // D3 (146.83Hz), A3 (220.00Hz), D4 (293.66Hz), F4 (349.23Hz)
-      const droneFreqs = [146.83, 220.00, 293.66, 349.23];
-
-      oscillators = droneFreqs.map((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const panner = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
-        const gain = audioCtx.createGain();
-
-        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-        // Gentle subtle detuning for sacred warmth
-        const detune = (i - 1.5) * 2.5;
-        osc.detune.setValueAtTime(detune, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0.04 / (i + 1), audioCtx.currentTime);
-
-        if (panner) {
-          panner.pan.setValueAtTime((i % 2 === 0 ? -0.4 : 0.4), audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(panner);
-          panner.connect(masterGain);
-        } else {
-          osc.connect(gain);
-          gain.connect(masterGain);
-        }
-
-        osc.start();
-        return osc;
-      });
-
-      // Periodic ethereal high chime tone (mimicking gentle brass singing bowl)
-      intervalId = setInterval(() => {
-        if (!audioCtx || !isPlaying) return;
-        playSereneChime(audioCtx, masterGain);
-      }, 7000);
-
-      isPlaying = true;
-      toggleBtn.classList.add('playing');
-      if (labelEl) labelEl.textContent = 'Ambience: Flowing';
-      showToast('Sacred acoustic ambience initiated.');
-    } catch (err) {
-      console.warn('Audio synthesis could not start:', err);
-    }
-  }
-
-  function playSereneChime(ctx, destination) {
-    try {
-      const chimeOsc = ctx.createOscillator();
-      const chimeGain = ctx.createGain();
-
-      // High gentle note (A5 - 880Hz or E6 - 1318Hz)
-      const chimes = [880, 1046.5, 1174.66, 1318.51];
-      const note = chimes[Math.floor(Math.random() * chimes.length)];
-
-      chimeOsc.type = 'sine';
-      chimeOsc.frequency.setValueAtTime(note, ctx.currentTime);
-
-      const now = ctx.currentTime;
-      chimeGain.gain.setValueAtTime(0, now);
-      chimeGain.gain.linearRampToValueAtTime(0.025, now + 0.6);
-      chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
-
-      chimeOsc.connect(chimeGain);
-      chimeGain.connect(destination);
-
-      chimeOsc.start(now);
-      chimeOsc.stop(now + 6);
-    } catch (e) {}
-  }
-
-  function stopAmbience() {
-    if (audioCtx && masterGain) {
-      masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
-      setTimeout(() => {
-        oscillators.forEach(osc => {
-          try { osc.stop(); osc.disconnect(); } catch (e) {}
-        });
-        oscillators = [];
-        if (intervalId) clearInterval(intervalId);
-        if (audioCtx) audioCtx.close();
-        audioCtx = null;
-      }, 1600);
-    }
-    isPlaying = false;
-    toggleBtn.classList.remove('playing');
-    if (labelEl) labelEl.textContent = 'Sacred Ambience';
-    showToast('Ambience paused.');
-  }
-
-  toggleBtn.addEventListener('click', () => {
-    if (isPlaying) {
-      stopAmbience();
-    } else {
-      startAmbience();
-    }
-  });
-}
 
 /* ==========================================================================
    5. CLIPBOARD & INTERACTION HELPERS
