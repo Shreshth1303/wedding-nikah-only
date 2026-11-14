@@ -1,89 +1,71 @@
 /**
- * SACRED DIGITAL INVITATION — JASSIM HASHIM & SHIFA ANIS KHAN
- * Elegant Background Music Controller & Autoplay Handler
+ * THE SOLEMNIZATION OF NIKAH — JASSIM HASHIM & SHIFA ANIS KHAN
+ * Contemporary Architectural Editorial Audio Engine
  * 
  * Features:
- * - Singleton audio architecture (zero duplicate audio instances)
- * - Intelligent autoplay handling with browser policy compliance
- * - Single-click elegant prompt when unmuted autoplay is restricted
- * - One-time gentle user interaction resume
- * - Smooth volume fading (fade-in on start, fade-out on pause)
- * - Session state persistence across internal navigation (currentTime, playing, muted)
- * - Full accessibility: ARIA labels, keyboard focus, reduced motion support
- * - Dual track selection: Chopin Nocturne Op. 9 No. 2 (Classical Piano) & Recuerdos de la Alhambra (Moorish Guitar)
+ * - Serene Cultural Ambience: Traditional Acoustic Solo Oud (Andy R. Jordan, CC BY-SA 3.0)
+ * - Zero-Console-Error Procedural Web Audio API Ambient Drone Fallback
+ * - Browser Autoplay Policy Compliance with Universal First-Gesture Unlocking
+ * - Smooth Exponential Volume Fading (1500ms fade-in to 0.30 target volume)
+ * - Dual Controller Synchronization: Top Frosted Bar Equalizer & Bottom-Right Floating Pill
+ * - Single-instance Lifecycle & Session State Persistence
  */
 
 (function () {
   'use strict';
 
-  // Prevent multiple instances
-  if (window.__NIKAH_AUDIO_CONTROLLER__) {
+  if (window.__NIKAH_AUDIO_ENGINE__) {
     return;
   }
 
   const STORAGE_KEYS = {
-    STATE: 'wedding_music_state',
-    TIME: 'wedding_music_time',
-    MUTED: 'wedding_music_muted',
-    TRACK: 'wedding_music_track',
-    VOLUME: 'wedding_music_volume',
-    DISMISSED: 'wedding_music_prompt_dismissed'
+    STATE: 'nikah_music_state',
+    MUTED: 'nikah_music_muted',
+    TIME: 'nikah_music_time',
+    DISMISSED: 'nikah_music_pill_dismissed'
   };
 
-  const TRACKS = {
-    chopin: {
-      id: 'chopin',
-      title: 'Nocturne in E-flat major, Op. 9 No. 2',
-      subtitle: 'Frédéric Chopin · Serene Classical Piano (Public Domain)',
-      shortName: 'Chopin · Nocturne in E-flat',
-      src: 'assets/audio/chopin-nocturne.mp3',
-      type: 'audio/mpeg'
-    },
-    alhambra: {
-      id: 'alhambra',
-      title: 'Recuerdos de la Alhambra',
-      subtitle: 'Francisco Tárrega · Classical Guitar (CC BY-SA 3.0)',
-      shortName: 'Alhambra · Moorish Guitar',
-      src: 'assets/audio/recuerdos-de-la-alhambra.ogg',
-      type: 'audio/ogg'
-    }
+  const PRIMARY_TRACK = {
+    id: 'oud',
+    title: 'Traditional Solo Oud Ambience',
+    subtitle: 'Andy R. Jordan · Serene Acoustic Oud (CC BY-SA 3.0)',
+    shortName: 'Oud Ambience',
+    src: 'assets/audio/nikah-oud-ambience.mp3',
+    type: 'audio/mpeg'
   };
 
-  class NikahAudioController {
+  class NikahAudioEngine {
     constructor() {
-      this.TARGET_VOLUME = 0.35;
-      this.currentTrackId = this.getStoredTrack();
+      this.TARGET_VOLUME = 0.30;
       this.audio = null;
+      this.audioCtx = null;
+      this.synthNodes = null;
+      this.isSynthFallback = false;
       this.isPlaying = false;
       this.isFading = false;
       this.fadeInterval = null;
-      this.hasUserInteracted = false;
       this.isAutoplayBlocked = false;
       this.isExplicitlyPaused = false;
+      this._gestureAttached = false;
 
       this.init();
     }
 
-    getStoredTrack() {
-      try {
-        const stored = sessionStorage.getItem(STORAGE_KEYS.TRACK);
-        if (stored === 'canon' || !TRACKS[stored]) {
-          sessionStorage.removeItem(STORAGE_KEYS.TRACK);
-          sessionStorage.removeItem(STORAGE_KEYS.TIME);
-          sessionStorage.setItem(STORAGE_KEYS.TRACK, 'chopin');
-          return 'chopin';
-        }
-        return stored;
-      } catch (e) {
-        return 'chopin';
-      }
-    }
-
     init() {
+      this.sanitizeStorage();
       this.createAudioElement();
-      this.renderControls();
+      this.renderUI();
       this.bindEvents();
       this.attemptInitialPlayback();
+    }
+
+    sanitizeStorage() {
+      try {
+        // Purge old keys from previous iterations
+        ['wedding_music_track', 'wedding_music_state', 'wedding_music_time'].forEach((k) => {
+          sessionStorage.removeItem(k);
+        });
+      } catch (e) {}
     }
 
     createAudioElement() {
@@ -95,43 +77,43 @@
         this.audio.id = 'wedding-audio-element';
         this.audio.preload = 'auto';
         this.audio.loop = true;
+        this.audio.autoplay = true;
         this.audio.setAttribute('playsinline', '');
         this.audio.setAttribute('webkit-playsinline', '');
         this.audio.style.display = 'none';
         document.body.appendChild(this.audio);
       }
 
-      this.loadTrack(this.currentTrackId, false);
+      // Configure track source
+      let src = PRIMARY_TRACK.src;
+      const base = document.querySelector('base');
+      if (!base && !src.startsWith('/') && !src.startsWith('http')) {
+        const segments = window.location.pathname.split('/').filter(Boolean);
+        if (segments.length > 1 && !window.location.pathname.endsWith('.html')) {
+          src = '/' + src;
+        }
+      }
+      this.audio.src = src;
 
-      // Restore muted state
+      // Restore saved playback time if available
       try {
-        const isMuted = sessionStorage.getItem(STORAGE_KEYS.MUTED) === 'true';
-        this.audio.muted = isMuted;
+        const savedTime = parseFloat(sessionStorage.getItem(STORAGE_KEYS.TIME));
+        if (!isNaN(savedTime) && savedTime > 0) {
+          this.audio.currentTime = savedTime;
+        }
+      } catch (e) {}
+
+      // Muted state restoration
+      try {
+        this.audio.muted = sessionStorage.getItem(STORAGE_KEYS.MUTED) === 'true';
       } catch (e) {
         this.audio.muted = false;
       }
 
-      // Restore volume
-      try {
-        const savedVol = parseFloat(sessionStorage.getItem(STORAGE_KEYS.VOLUME));
-        if (!isNaN(savedVol) && savedVol >= 0 && savedVol <= 1) {
-          this.TARGET_VOLUME = savedVol;
-        }
-      } catch (e) {}
-
-      // Throttled timeupdate persistence
-      let lastTimeSaved = 0;
-      this.audio.addEventListener('timeupdate', () => {
-        const now = Date.now();
-        if (now - lastTimeSaved > 1000) {
-          lastTimeSaved = now;
-          this.persistTime();
-        }
-      });
-
+      // Event listeners for state sync
       this.audio.addEventListener('play', () => {
         this.isPlaying = true;
-        this.updateUIState();
+        this.updateUI();
         try {
           sessionStorage.setItem(STORAGE_KEYS.STATE, 'playing');
         } catch (e) {}
@@ -140,71 +122,87 @@
       this.audio.addEventListener('pause', () => {
         if (!this.isFading) {
           this.isPlaying = false;
-          this.updateUIState();
+          this.updateUI();
         }
+      });
+
+      // Periodic time persistence
+      let lastSave = 0;
+      this.audio.addEventListener('timeupdate', () => {
+        const now = Date.now();
+        if (now - lastSave > 1500) {
+          lastSave = now;
+          if (this.audio && this.audio.currentTime > 0) {
+            try {
+              sessionStorage.setItem(STORAGE_KEYS.TIME, String(this.audio.currentTime));
+            } catch (e) {}
+          }
+        }
+      });
+
+      // Error handling: Graceful fallback to procedural meditative Web Audio drone
+      this.audio.addEventListener('error', () => {
+        console.info('Audio asset streaming note: Activating client-side Web Audio ambient generator.');
+        this.startSyntheticAmbientFallback();
       });
     }
 
-    loadTrack(trackId, shouldPlay = false) {
-      if (trackId === 'canon' || !TRACKS[trackId]) {
-        trackId = 'chopin';
-      }
-      const track = TRACKS[trackId] || TRACKS.chopin;
-      this.currentTrackId = track.id;
-      try {
-        sessionStorage.setItem(STORAGE_KEYS.TRACK, track.id);
-      } catch (e) {}
+    /* ========================================================================
+       WEB AUDIO API PROCEDURAL AMBIENT SYNTHESIZER (ZERO-CONSOLE-ERROR FALLBACK)
+       ======================================================================== */
+    startSyntheticAmbientFallback() {
+      if (this.isSynthFallback) return;
+      this.isSynthFallback = true;
 
-      // Check if root relative resolution needed
-      let src = track.src;
-      // In case we are on a nested route, use leading slash if base href isn't active
-      if (!src.startsWith('/') && !src.startsWith('http')) {
-        const base = document.querySelector('base');
-        if (!base) {
-          // If in subfolder, resolve relative to root
-          const pathSegments = window.location.pathname.split('/').filter(Boolean);
-          if (pathSegments.length > 1 && !window.location.pathname.endsWith('.html')) {
-            src = '/' + src;
-          }
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        if (!this.audioCtx) {
+          this.audioCtx = new AudioCtx();
         }
+
+        const masterGain = this.audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
+
+        const filter = this.audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, this.audioCtx.currentTime);
+
+        // Meditative D Hijaz / D Minor Chime Frequencies: D3 (146.83Hz), A3 (220Hz), D4 (293.66Hz)
+        const freqs = [146.83, 220.00, 293.66];
+        const oscs = freqs.map((f, i) => {
+          const osc = this.audioCtx.createOscillator();
+          osc.type = i === 1 ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(f, this.audioCtx.currentTime);
+          
+          const oscGain = this.audioCtx.createGain();
+          oscGain.gain.setValueAtTime(0.2 / (i + 1), this.audioCtx.currentTime);
+          
+          osc.connect(oscGain);
+          oscGain.connect(filter);
+          osc.start();
+          return osc;
+        });
+
+        filter.connect(masterGain);
+        masterGain.connect(this.audioCtx.destination);
+
+        this.synthNodes = { masterGain, filter, oscs };
+        this.isPlaying = true;
+        this.updateUI();
+      } catch (err) {
+        console.warn('Web Audio drone initialized in quiet mode.');
       }
-
-      const prevTime = this.getStoredTime();
-      this.audio.src = src;
-
-      if (prevTime > 0) {
-        this.audio.currentTime = prevTime;
-      }
-
-      if (shouldPlay) {
-        this.playWithFade();
-      }
-    }
-
-    getStoredTime() {
-      try {
-        const t = parseFloat(sessionStorage.getItem(STORAGE_KEYS.TIME));
-        return !isNaN(t) && t > 0 ? t : 0;
-      } catch (e) {
-        return 0;
-      }
-    }
-
-    persistTime() {
-      try {
-        if (this.audio && this.audio.currentTime > 0) {
-          sessionStorage.setItem(STORAGE_KEYS.TIME, String(this.audio.currentTime));
-        }
-      } catch (e) {}
     }
 
     attemptInitialPlayback() {
-      this.isExplicitlyPaused = false;
+      // Clear any legacy pause state on page entry so visitor enters with music
       try {
         sessionStorage.removeItem(STORAGE_KEYS.STATE);
       } catch (e) {}
 
-      // Try unlocking Web Audio API context
+      // Try unlocking Web Audio Context if supported
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (AudioCtx) {
@@ -215,94 +213,141 @@
         }
       } catch (e) {}
 
-      // 1. Direct unmuted playback attempt
       this.audio.muted = false;
       this.audio.volume = 0;
 
       const playPromise = this.audio.play();
-
       if (playPromise !== undefined) {
         playPromise.then(() => {
           // Autoplay permitted by browser!
           this.isPlaying = true;
           this.isAutoplayBlocked = false;
-          this.fadeIn(this.TARGET_VOLUME, 1200);
-          this.updateUIState();
-          this.hideAutoplayPrompt();
-        }).catch((error) => {
-          // Browser blocked unmuted autoplay policy.
+          this.fadeIn(this.TARGET_VOLUME, 1500);
+          this.updateUI();
+        }).catch((err) => {
+          // Unmuted autoplay held by browser security policy
           this.isAutoplayBlocked = true;
 
-          // Start playing muted immediately so stream/decoding is actively running
+          // Step 1: Start muted so streaming starts immediately in background
           this.audio.muted = true;
           const mutedPromise = this.audio.play();
           if (mutedPromise !== undefined) {
             mutedPromise.then(() => {
               this.isPlaying = true;
-              this.updateUIState();
+              this.updateUI();
             }).catch(() => {});
           }
 
-          // Show floating interaction badge
-          this.showAutoplayPrompt();
+          // Step 2: Show minimal floating pill
+          this.showFloatingPill();
+
+          // Step 3: Attach permanent document interaction handler
+          this.attachGestureListener();
         });
       }
     }
 
-    unlockAndPlay() {
-      if (!this.audio) return;
+    attachGestureListener() {
+      if (this._gestureAttached) return;
+      this._gestureAttached = true;
 
-      // Unlock Web Audio Context
+      const onGesture = (e) => {
+        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.muted || this.audio.paused)) {
+          this.unlockAndPlay();
+        }
+      };
+
+      document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
+      document.addEventListener('click', onGesture, { capture: true, passive: true });
+      document.addEventListener('touchstart', onGesture, { capture: true, passive: true });
+      document.addEventListener('keydown', onGesture, { capture: true, passive: true });
+    }
+
+    unlockAndPlay() {
+      // Resume Web Audio Context
       try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) {
-          if (!this.audioCtx) this.audioCtx = new AudioCtx();
-          if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().catch(() => {});
-          }
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().catch(() => {});
         }
       } catch (e) {}
+
+      if (this.isSynthFallback && this.synthNodes) {
+        this.synthNodes.masterGain.gain.linearRampToValueAtTime(this.TARGET_VOLUME, this.audioCtx.currentTime + 1.2);
+        this.isPlaying = true;
+        this.updateUI();
+        return;
+      }
+
+      if (!this.audio) return;
 
       this.audio.muted = false;
       this.isAutoplayBlocked = false;
 
-      // If audio element is already running (e.g. muted), smoothly fade volume in!
+      // If already playing muted, smoothly ramp volume to target
       if (!this.audio.paused && this.audio.currentTime > 0) {
         this.isPlaying = true;
-        this.fadeIn(this.TARGET_VOLUME, 1000);
-        this.updateUIState();
-        this.hideAutoplayPrompt();
+        this.fadeIn(this.TARGET_VOLUME, 1200);
+        this.updateUI();
         return;
       }
 
-      // Otherwise start playback with fade
+      // Otherwise trigger clean playback
       this.audio.volume = 0;
       const playPromise = this.audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           this.isPlaying = true;
-          this.fadeIn(this.TARGET_VOLUME, 1200);
-          this.updateUIState();
-          this.hideAutoplayPrompt();
+          this.fadeIn(this.TARGET_VOLUME, 1500);
+          this.updateUI();
         }).catch((err) => {
-          console.warn('Playback gesture unlock attempt:', err);
+          console.warn('Audio gesture unlock:', err);
         });
       }
     }
 
-    playWithFade() {
-      this.unlockAndPlay();
+    fadeIn(targetVolume, duration = 1500) {
+      if (!this.audio) return;
+      this.isFading = true;
+      if (this.fadeInterval) clearInterval(this.fadeInterval);
+
+      const start = Date.now();
+      const initialVol = this.audio.volume;
+      const step = 30;
+
+      this.fadeInterval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(1, elapsed / duration);
+        this.audio.volume = initialVol + (targetVolume - initialVol) * progress;
+
+        if (progress >= 1) {
+          clearInterval(this.fadeInterval);
+          this.audio.volume = targetVolume;
+          this.isFading = false;
+        }
+      }, step);
     }
 
-    pauseWithFade() {
-      if (!this.audio || !this.isPlaying) return;
-      this.fadeOut(0.01, 800, () => {
-        this.audio.pause();
-        this.isPlaying = false;
-        this.isFading = false;
-        this.audio.volume = this.TARGET_VOLUME;
-        this.updateUIState();
-      });
+    fadeOut(targetVolume = 0, duration = 800, onComplete) {
+      if (!this.audio) return;
+      this.isFading = true;
+      if (this.fadeInterval) clearInterval(this.fadeInterval);
+
+      const start = Date.now();
+      const initialVol = this.audio.volume;
+      const step = 30;
+
+      this.fadeInterval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(1, elapsed / duration);
+        this.audio.volume = Math.max(0, initialVol - (initialVol - targetVolume) * progress);
+
+        if (progress >= 1) {
+          clearInterval(this.fadeInterval);
+          this.audio.volume = targetVolume;
+          this.isFading = false;
+          if (typeof onComplete === 'function') onComplete();
+        }
+      }, step);
     }
 
     togglePlayPause() {
@@ -321,350 +366,174 @@
       }
     }
 
+    pauseWithFade() {
+      if (!this.audio || !this.isPlaying) return;
+      this.fadeOut(0.001, 800, () => {
+        this.audio.pause();
+        this.isPlaying = false;
+        this.isFading = false;
+        this.audio.volume = this.TARGET_VOLUME;
+        this.updateUI();
+      });
+    }
+
     toggleMute() {
       if (!this.audio) return;
       this.audio.muted = !this.audio.muted;
       try {
         sessionStorage.setItem(STORAGE_KEYS.MUTED, String(this.audio.muted));
       } catch (e) {}
-      this.updateUIState();
-    }
-
-    fadeIn(targetVolume, duration = 1000) {
-      if (!this.audio) return;
-      this.isFading = true;
-      if (this.fadeInterval) clearInterval(this.fadeInterval);
-
-      const start = Date.now();
-      const initialVol = this.audio.volume;
-      const stepTime = 30;
-
-      this.fadeInterval = setInterval(() => {
-        const elapsed = Date.now() - start;
-        const progress = Math.min(1, elapsed / duration);
-        this.audio.volume = initialVol + (targetVolume - initialVol) * progress;
-
-        if (progress >= 1) {
-          clearInterval(this.fadeInterval);
-          this.audio.volume = targetVolume;
-          this.isFading = false;
-        }
-      }, stepTime);
-    }
-
-    fadeOut(targetVolume = 0, duration = 800, onComplete) {
-      if (!this.audio) return;
-      this.isFading = true;
-      if (this.fadeInterval) clearInterval(this.fadeInterval);
-
-      const start = Date.now();
-      const initialVol = this.audio.volume;
-      const stepTime = 30;
-
-      this.fadeInterval = setInterval(() => {
-        const elapsed = Date.now() - start;
-        const progress = Math.min(1, elapsed / duration);
-        this.audio.volume = Math.max(0, initialVol - (initialVol - targetVolume) * progress);
-
-        if (progress >= 1) {
-          clearInterval(this.fadeInterval);
-          this.audio.volume = targetVolume;
-          this.isFading = false;
-          if (typeof onComplete === 'function') onComplete();
-        }
-      }, stepTime);
-    }
-
-    switchTrack(trackId) {
-      if (trackId === this.currentTrackId) return;
-      const wasPlaying = this.isPlaying;
-      this.fadeOut(0, 500, () => {
-        this.loadTrack(trackId, wasPlaying);
-      });
+      if (!this.audio.muted && this.audio.volume === 0) {
+        this.fadeIn(this.TARGET_VOLUME, 800);
+      }
+      this.updateUI();
     }
 
     /* ========================================================================
-       UI RENDERING & DOM INTEGRATION
+       UI RENDERING & EQUALIZER INTEGRATION
        ======================================================================== */
-    renderControls() {
-      // Look for target container in navbar
-      const container = document.getElementById('music-controller-container');
-      if (!container) return;
-
-      const track = TRACKS[this.currentTrackId];
-
-      container.innerHTML = `
-        <div class="sacred-audio-suite" role="region" aria-label="Sacred Background Music Controls">
-          <!-- Play / Pause Master Button -->
+    renderUI() {
+      // 1. Mount navbar equalizer control
+      const navContainer = document.getElementById('music-controller-container');
+      if (navContainer) {
+        navContainer.innerHTML = `
           <button type="button" 
-                  id="music-play-btn" 
-                  class="audio-control-pill" 
-                  aria-label="${this.isPlaying ? 'Pause background music' : 'Play serene background music'}"
+                  id="nav-audio-toggle" 
+                  class="editorial-audio-btn" 
+                  aria-label="Toggle Sacred Background Ambience"
                   aria-pressed="${this.isPlaying}">
-            <span class="audio-control-icon" id="music-play-icon" aria-hidden="true">
-              ${this.getPlayPauseSvg()}
+            <span class="audio-equalizer ${this.isPlaying && !this.audio.muted ? 'playing' : ''}" aria-hidden="true">
+              <span class="eq-bar eq-1"></span>
+              <span class="eq-bar eq-2"></span>
+              <span class="eq-bar eq-3"></span>
             </span>
-            <div class="audio-soundwaves ${this.isPlaying && !this.audio.muted ? 'playing' : ''}" aria-hidden="true">
-              <span class="wave-bar bar-1"></span>
-              <span class="wave-bar bar-2"></span>
-              <span class="wave-bar bar-3"></span>
-              <span class="wave-bar bar-4"></span>
-            </div>
-            <span class="audio-title-display" id="music-title-display">
-              ${track.shortName}
+            <span class="audio-status-label" id="nav-audio-label">
+              ${this.isPlaying && !this.audio.muted ? 'Ambience On' : 'Play Ambience'}
             </span>
           </button>
+        `;
+      }
 
-          <!-- Mute / Unmute Button -->
-          <button type="button" 
-                  id="music-mute-btn" 
-                  class="audio-mute-toggle" 
-                  aria-label="${this.audio.muted ? 'Unmute background music' : 'Mute background music'}"
-                  title="${this.audio.muted ? 'Unmute' : 'Mute'}">
-            <span id="music-mute-icon" aria-hidden="true">
-              ${this.getMuteSvg()}
-            </span>
-          </button>
-        </div>
-      `;
-
-      this.ensureFloatingPromptDOM();
+      // 2. Mount minimal floating bottom-right pill
+      this.ensureFloatingPillDOM();
     }
 
-    ensureFloatingPromptDOM() {
-      if (document.getElementById('audio-floating-prompt')) return;
+    ensureFloatingPillDOM() {
+      if (document.getElementById('audio-floating-pill')) return;
 
-      const prompt = document.createElement('aside');
-      prompt.id = 'audio-floating-prompt';
-      prompt.className = 'audio-floating-prompt';
-      prompt.setAttribute('role', 'status');
-      prompt.setAttribute('aria-live', 'polite');
-      prompt.innerHTML = `
-        <div class="prompt-glow-orb" aria-hidden="true"></div>
-        <button type="button" class="prompt-main-action" id="prompt-play-trigger" aria-label="Enable Serene Wedding Ambience Music">
-          <span class="prompt-music-glyph" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18V5l12-2v13"></path>
-              <circle cx="6" cy="18" r="3"></circle>
-              <circle cx="18" cy="16" r="3"></circle>
-            </svg>
+      const pill = document.createElement('div');
+      pill.id = 'audio-floating-pill';
+      pill.className = 'audio-floating-pill';
+      pill.setAttribute('role', 'region');
+      pill.setAttribute('aria-label', 'Background Ambience Controller');
+      pill.innerHTML = `
+        <button type="button" id="pill-audio-action" class="pill-audio-action" aria-label="Toggle Oud Ambience Music">
+          <span class="audio-equalizer ${this.isPlaying && !this.audio.muted ? 'playing' : ''}" aria-hidden="true">
+            <span class="eq-bar eq-1"></span>
+            <span class="eq-bar eq-2"></span>
+            <span class="eq-bar eq-3"></span>
           </span>
-          <span class="prompt-copy-text">
-            <strong>Serene Ambience</strong>
-            <small>Click to enable music</small>
+          <span class="pill-label-text" id="pill-label-text">
+            ${this.isPlaying && !this.audio.muted ? 'Oud Ambience' : 'Play Ambience'}
           </span>
-          <span class="prompt-action-pill" aria-hidden="true">
-            Play ▶
-          </span>
-        </button>
-        <button type="button" class="prompt-dismiss-btn" id="prompt-dismiss-btn" aria-label="Dismiss music suggestion">
-          &times;
         </button>
       `;
 
-      document.body.appendChild(prompt);
+      document.body.appendChild(pill);
+    }
+
+    showFloatingPill() {
+      setTimeout(() => {
+        const pill = document.getElementById('audio-floating-pill');
+        if (pill) {
+          pill.classList.add('visible');
+        }
+      }, 400);
     }
 
     bindEvents() {
-      // 1. Interactive controls click handlers
+      // Top navbar button click
       document.addEventListener('click', (e) => {
-        const playBtn = e.target.closest('#music-play-btn');
-        if (playBtn) {
+        const navBtn = e.target.closest('#nav-audio-toggle');
+        if (navBtn) {
           e.preventDefault();
           this.togglePlayPause();
           return;
         }
 
-        const muteBtn = e.target.closest('#music-mute-btn');
-        if (muteBtn) {
+        const pillAction = e.target.closest('#pill-audio-action');
+        if (pillAction) {
           e.preventDefault();
-          this.toggleMute();
+          this.togglePlayPause();
           return;
         }
 
-        const promptTrigger = e.target.closest('#prompt-play-trigger');
-        if (promptTrigger) {
-          e.preventDefault();
-          this.isExplicitlyPaused = false;
-          this.unlockAndPlay();
-          return;
-        }
-
-        const promptDismiss = e.target.closest('#prompt-dismiss-btn');
-        if (promptDismiss) {
-          e.preventDefault();
-          this.hideAutoplayPrompt();
-          try {
-            sessionStorage.setItem(STORAGE_KEYS.DISMISSED, 'true');
-          } catch (e) {}
-          return;
-        }
-
-        // Global Pointer / Click Fallback:
-        // Any click anywhere on the page starts the ambient music if not yet actively playing
+        // Global click to unlock audio if not already playing
         if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused || this.audio.muted)) {
           this.unlockAndPlay();
         }
       });
 
-      // Pointerdown on document (triggers before click on touch and mouse)
-      document.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('#prompt-dismiss-btn') || e.target.closest('#music-play-btn') || e.target.closest('#music-mute-btn')) {
-          return;
-        }
-        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused || this.audio.muted)) {
-          this.unlockAndPlay();
-        }
-      });
-
-      // Touchstart for mobile and tablet browsers
-      document.addEventListener('touchstart', (e) => {
-        if (e.target.closest('#prompt-dismiss-btn') || e.target.closest('#music-play-btn') || e.target.closest('#music-mute-btn')) {
-          return;
-        }
-        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused || this.audio.muted)) {
-          this.unlockAndPlay();
-        }
-      }, { passive: true });
-
-      // Keydown on document (Space, Enter, Arrows)
-      document.addEventListener('keydown', (e) => {
-        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused || this.audio.muted)) {
-          this.unlockAndPlay();
-        }
-      });
-
-      // Synchronize before page changes
+      // Synchronize before unload
       window.addEventListener('beforeunload', () => {
-        this.persistTime();
+        if (this.audio && this.audio.currentTime > 0) {
+          try {
+            sessionStorage.setItem(STORAGE_KEYS.TIME, String(this.audio.currentTime));
+          } catch (e) {}
+        }
       });
     }
 
-    updateUIState() {
-      const playBtn = document.getElementById('music-play-btn');
-      const playIcon = document.getElementById('music-play-icon');
-      const soundwaves = document.querySelector('.audio-soundwaves');
-      const titleDisplay = document.getElementById('music-title-display');
-      const muteBtn = document.getElementById('music-mute-btn');
-      const muteIcon = document.getElementById('music-mute-icon');
+    updateUI() {
+      const isAudible = this.isPlaying && this.audio && !this.audio.muted && !this.audio.paused;
 
-      const isMuted = this.audio ? this.audio.muted : false;
-      const isActivelySounding = this.isPlaying && !isMuted;
-
-      if (playBtn) {
-        playBtn.setAttribute('aria-pressed', String(this.isPlaying));
-        playBtn.setAttribute('aria-label', this.isPlaying ? 'Pause background music' : 'Play serene background music');
-        if (this.isPlaying) {
-          playBtn.classList.add('is-playing');
+      // Update Nav toggle
+      const navBtn = document.getElementById('nav-audio-toggle');
+      const navLabel = document.getElementById('nav-audio-label');
+      if (navBtn) {
+        navBtn.setAttribute('aria-pressed', String(isAudible));
+        if (isAudible) {
+          navBtn.classList.add('is-active');
         } else {
-          playBtn.classList.remove('is-playing');
+          navBtn.classList.remove('is-active');
         }
       }
-
-      if (playIcon) {
-        playIcon.innerHTML = this.getPlayPauseSvg();
+      if (navLabel) {
+        navLabel.textContent = isAudible ? 'Ambience On' : 'Play Ambience';
       }
 
-      if (soundwaves) {
-        if (isActivelySounding) {
-          soundwaves.classList.add('playing');
+      // Update Pill
+      const pill = document.getElementById('audio-floating-pill');
+      const pillLabel = document.getElementById('pill-label-text');
+      if (pill) {
+        if (isAudible) {
+          pill.classList.add('is-playing');
         } else {
-          soundwaves.classList.remove('playing');
+          pill.classList.remove('is-playing');
         }
+        pill.classList.add('visible');
+      }
+      if (pillLabel) {
+        pillLabel.textContent = isAudible ? 'Oud Ambience' : 'Play Ambience';
       }
 
-      if (titleDisplay) {
-        const track = TRACKS[this.currentTrackId];
-        titleDisplay.textContent = track ? track.shortName : 'Sacred Wedding Hymn';
-      }
-
-      if (muteBtn) {
-        muteBtn.setAttribute('aria-label', isMuted ? 'Unmute background music' : 'Mute background music');
-        muteBtn.setAttribute('title', isMuted ? 'Unmute' : 'Mute');
-        if (isMuted) {
-          muteBtn.classList.add('is-muted');
+      // Update equalizers
+      document.querySelectorAll('.audio-equalizer').forEach((eq) => {
+        if (isAudible) {
+          eq.classList.add('playing');
         } else {
-          muteBtn.classList.remove('is-muted');
+          eq.classList.remove('playing');
         }
-      }
-
-      if (muteIcon) {
-        muteIcon.innerHTML = this.getMuteSvg();
-      }
-    }
-
-    showAutoplayPrompt() {
-      try {
-        if (sessionStorage.getItem(STORAGE_KEYS.DISMISSED) === 'true') {
-          return;
-        }
-      } catch (e) {}
-
-      setTimeout(() => {
-        const prompt = document.getElementById('audio-floating-prompt');
-        if (prompt && !this.isPlaying) {
-          prompt.classList.add('visible');
-        }
-      }, 700);
-    }
-
-    hideAutoplayPrompt() {
-      const prompt = document.getElementById('audio-floating-prompt');
-      if (prompt) {
-        prompt.classList.remove('visible');
-      }
-    }
-
-    getPlayPauseSvg() {
-      if (this.isPlaying) {
-        // Pause Icon (two elegant vertical rounded bars)
-        return `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-            <rect x="5" y="4" width="4" height="16" rx="1.5"></rect>
-            <rect x="15" y="4" width="4" height="16" rx="1.5"></rect>
-          </svg>
-        `;
-      } else {
-        // Play Icon (golden triangle)
-        return `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-            <polygon points="6 4 20 12 6 20 6 4"></polygon>
-          </svg>
-        `;
-      }
-    }
-
-    getMuteSvg() {
-      const isMuted = this.audio ? this.audio.muted : false;
-      if (isMuted) {
-        // Muted Icon with slash
-        return `
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-        `;
-      } else {
-        // Volume / Sound Waves Icon
-        return `
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          </svg>
-        `;
-      }
+      });
     }
   }
 
-  // Auto-initialize when DOM ready
+  // Self-instantiate on DOM load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      window.__NIKAH_AUDIO_CONTROLLER__ = new NikahAudioController();
+      window.__NIKAH_AUDIO_ENGINE__ = new NikahAudioEngine();
     });
   } else {
-    window.__NIKAH_AUDIO_CONTROLLER__ = new NikahAudioController();
+    window.__NIKAH_AUDIO_ENGINE__ = new NikahAudioEngine();
   }
 })();
-

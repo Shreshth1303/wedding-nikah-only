@@ -1,35 +1,35 @@
 /**
- * SACRED DIGITAL INVITATION — JASSIM HASHIM & SHIFA ANIS KHAN
- * Moorish Architectural Manuscript Engine
- * Solemnization of Nikah — Friday, 15th January 2027
+ * THE SOLEMNIZATION OF NIKAH — JASSIM HASHIM & SHIFA ANIS KHAN
+ * Contemporary Architectural Editorial Interaction Suite
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initCountdown();
-  initCalendarActions();
-  initClipboardHelpers();
+  initLiveCountdown();
+  initCalendarDownload();
+  initAddressClipboard();
+  initPrintTrigger();
 });
 
 /* ==========================================================================
-   1. COUNTDOWN TO SACRED UNION
+   1. ARCHITECTURAL LIVE COUNTDOWN
    Target: Friday, 15th January 2027 at 11:30 AM IST (UTC+05:30)
    ========================================================================== */
-function initCountdown() {
+function initLiveCountdown() {
   const targetDate = new Date('2027-01-15T11:30:00+05:30').getTime();
 
   const daysEl = document.getElementById('count-days');
   const hoursEl = document.getElementById('count-hours');
   const minutesEl = document.getElementById('count-minutes');
   const secondsEl = document.getElementById('count-seconds');
-  const countdownTitleEl = document.querySelector('.countdown-title');
+  const bannerEl = document.getElementById('countdown-status-banner');
 
   function update() {
-    const now = new Date().getTime();
+    const now = Date.now();
     const distance = targetDate - now;
 
     if (distance <= 0) {
-      if (countdownTitleEl) {
-        countdownTitleEl.textContent = 'Alhamdulillah · The Sacred Day of Union Has Arrived';
+      if (bannerEl) {
+        bannerEl.textContent = 'Alhamdulillah · The Sacred Day of Union Has Arrived';
       }
       if (daysEl) daysEl.textContent = '00';
       if (hoursEl) hoursEl.textContent = '00';
@@ -54,118 +54,94 @@ function initCountdown() {
 }
 
 /* ==========================================================================
-   2. CALENDAR INTEGRATION (.ICS & GOOGLE CALENDAR)
+   2. CLIENT-SIDE .ICS CALENDAR GENERATOR
    ========================================================================== */
-function initCalendarActions() {
-  const triggerBtn = document.getElementById('btn-calendar-trigger');
-  const menuEl = document.getElementById('calendar-dropdown-menu');
-  const googleBtn = document.getElementById('cal-google');
-  const icsBtn = document.getElementById('cal-ics');
-  const yahooBtn = document.getElementById('cal-yahoo');
+function initCalendarDownload() {
+  const btn = document.getElementById('btn-add-calendar');
+  if (!btn) return;
 
-  if (!triggerBtn || !menuEl) return;
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
 
-  // Toggle calendar options dropdown
-  triggerBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menuEl.classList.toggle('active');
+    const eventData = {
+      title: 'Solemnization of Nikah: Jassim & Shifa',
+      description: "Under the grace of the Almighty, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nDate: Friday, 15th January 2027 at 11:30 AM IST\\nVenue: Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik",
+      location: 'Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik, Maharashtra 422011',
+      startISO: '20270115T060000Z', // 11:30 AM IST is 06:00 AM UTC
+      endISO: '20270115T103000Z'    // 04:00 PM IST is 10:30 AM UTC
+    };
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Jassim & Shifa Nikah Celebration//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `SUMMARY:${eventData.title}`,
+      `DESCRIPTION:${eventData.description}`,
+      `LOCATION:${eventData.location}`,
+      `DTSTART:${eventData.startISO}`,
+      `DTEND:${eventData.endISO}`,
+      'STATUS:CONFIRMED',
+      'SEQUENCE:0',
+      'BEGIN:VALARM',
+      'TRIGGER:-P1D',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Reminder: Solemnization of Nikah of Jassim & Shifa tomorrow',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', 'nikah-jassim-shifa.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showMicroToast('Calendar event downloaded (.ics)');
   });
-
-  // Close when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!menuEl.contains(e.target) && e.target !== triggerBtn) {
-      menuEl.classList.remove('active');
-    }
-  });
-
-  const eventData = {
-    title: 'Solemnization of Nikah: Jassim & Shifa',
-    description: "Under the grace of the Almighty, Mr. Muhamed Hashim & Mrs. Mumtaz Muhamed Hashim together with Mr. Anis Asgar Khan & Mrs. Shabana Anis Khan cordially invite you to witness the Nikah of Jassim & Shifa.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nVenue: Bagai Banquet, Ashoka Marg, Nashik.",
-    location: 'Bagai Banquet, Ashoka Marg, Nashik, Maharashtra',
-    startISO: '20270115T060000Z', // 11:30 AM IST is 06:00 AM UTC
-    endISO: '20270115T103000Z',   // 04:00 PM IST is 10:30 AM UTC
-  };
-
-  // Google Calendar Link
-  if (googleBtn) {
-    googleBtn.addEventListener('click', () => {
-      menuEl.classList.remove('active');
-      const gUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${eventData.startISO}/${eventData.endISO}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.location)}`;
-      window.open(gUrl, '_blank', 'noopener,noreferrer');
-    });
-  }
-
-  // Yahoo Calendar Link
-  if (yahooBtn) {
-    yahooBtn.addEventListener('click', () => {
-      menuEl.classList.remove('active');
-      const yUrl = `https://calendar.yahoo.com/?v=60&view=d&type=20&title=${encodeURIComponent(eventData.title)}&st=${eventData.startISO}&et=${eventData.endISO}&desc=${encodeURIComponent(eventData.description)}&in_loc=${encodeURIComponent(eventData.location)}`;
-      window.open(yUrl, '_blank', 'noopener,noreferrer');
-    });
-  }
-
-  // ICS File Generation for Apple / Outlook Calendar
-  if (icsBtn) {
-    icsBtn.addEventListener('click', () => {
-      menuEl.classList.remove('active');
-      generateICSFile(eventData);
-      showToast('Nikah Calendar invitation (.ics) downloaded.');
-    });
-  }
 }
-
-function generateICSFile(event) {
-  const icsContent = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Jassim & Shifa Nikah Sanctuary//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'BEGIN:VEVENT',
-    `SUMMARY:${event.title}`,
-    `DESCRIPTION:${event.description.replace(/\n/g, '\\n')}`,
-    `LOCATION:${event.location}`,
-    `DTSTART:${event.startISO}`,
-    `DTEND:${event.endISO}`,
-    'STATUS:CONFIRMED',
-    'SEQUENCE:0',
-    'BEGIN:VALARM',
-    'TRIGGER:-P1D',
-    'ACTION:DISPLAY',
-    'DESCRIPTION:Reminder: Nikah of Jassim & Shifa tomorrow',
-    'END:VALARM',
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\r\n');
-
-  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = window.URL.createObjectURL(blob);
-  link.setAttribute('download', 'nikah-jassim-shifa.ics');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-
 
 /* ==========================================================================
-   5. CLIPBOARD & INTERACTION HELPERS
+   3. VENUE ADDRESS CLIPBOARD WITH INLINE FEEDBACK
    ========================================================================== */
-function initClipboardHelpers() {
-  const copyAddressBtn = document.getElementById('btn-copy-address');
-  if (copyAddressBtn) {
-    copyAddressBtn.addEventListener('click', () => {
-      const address = "Bagai Banquet, Ashoka Marg, Nashik, Maharashtra";
-      navigator.clipboard.writeText(address).then(() => {
-        showToast('Venue address copied to clipboard.');
-      }).catch(() => {
-        showToast('Address: Bagai Banquet, Ashoka Marg, Nashik');
-      });
-    });
-  }
+function initAddressClipboard() {
+  const copyBtn = document.getElementById('btn-copy-address');
+  if (!copyBtn) return;
 
-  // Print Keepsake action
+  const originalHtml = copyBtn.innerHTML;
+  const addressText = 'Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik, Maharashtra 422011';
+
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(addressText).then(() => {
+      copyBtn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Address Copied</span>
+      `;
+      copyBtn.classList.add('is-copied');
+
+      setTimeout(() => {
+        copyBtn.innerHTML = originalHtml;
+        copyBtn.classList.remove('is-copied');
+      }, 2400);
+
+      showMicroToast('Venue address copied to clipboard');
+    }).catch(() => {
+      showMicroToast('Address: Bagai Banquet, Ashoka Marg, Nashik');
+    });
+  });
+}
+
+/* ==========================================================================
+   4. ARCHIVAL KEEPSAKE PRINT TRIGGER
+   ========================================================================== */
+function initPrintTrigger() {
   const printBtn = document.getElementById('btn-print-invitation');
   if (printBtn) {
     printBtn.addEventListener('click', () => {
@@ -175,34 +151,23 @@ function initClipboardHelpers() {
 }
 
 /* ==========================================================================
-   6. TOAST NOTIFICATION UTILITY
+   5. MINIMALIST MICRO-TOAST NOTIFICATION
    ========================================================================== */
-let toastTimeout = null;
-function showToast(message) {
-  let toast = document.getElementById('sanctuary-toast');
+let toastTimer = null;
+function showMicroToast(message) {
+  let toast = document.getElementById('editorial-toast');
   if (!toast) {
     toast = document.createElement('div');
-    toast.id = 'sanctuary-toast';
-    toast.className = 'sanctuary-toast';
+    toast.id = 'editorial-toast';
+    toast.className = 'editorial-toast';
     document.body.appendChild(toast);
   }
 
   toast.textContent = message;
-  toast.classList.add('visible');
+  toast.classList.add('is-visible');
 
-  if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    toast.classList.remove('visible');
-  }, 3400);
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('is-visible');
+  }, 3000);
 }
-
-function escapeHTML(str) {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-

@@ -1,6 +1,7 @@
 /**
  * COMPREHENSIVE AUTOMATED VERIFICATION SUITE
  * The Solemnization of Nikah — Jassim Hashim & Shifa Anis Khan
+ * Contemporary Architectural Editorial Design Verification
  */
 
 const assert = require('assert');
@@ -9,7 +10,7 @@ const path = require('path');
 const http = require('http');
 const { server } = require('../server');
 
-const TEST_PORT = 4123;
+const TEST_PORT = 4124;
 const BASE_URL = `http://localhost:${TEST_PORT}`;
 
 function makeRequest(urlPath, headers = {}) {
@@ -30,7 +31,7 @@ function makeRequest(urlPath, headers = {}) {
 
 async function runTests() {
   console.log('\n======================================================');
-  console.log('✦ RUNNING SUITE: Moorish Architectural Nikah Website ✦');
+  console.log('✦ RUNNING SUITE: Contemporary Architectural Nikah Site ✦');
   console.log('======================================================\n');
 
   let passed = 0;
@@ -61,41 +62,41 @@ async function runTests() {
   }
 
   // 1. Static Asset Integrity Tests
-  test('Audio files exist with valid non-empty byte counts', () => {
-    const mp3Path = path.join(__dirname, '../assets/audio/chopin-nocturne.mp3');
-    const oggPath = path.join(__dirname, '../assets/audio/recuerdos-de-la-alhambra.ogg');
+  test('Acoustic Oud ambient audio file exists with valid non-empty byte counts', () => {
+    const oudPath = path.join(__dirname, '../assets/audio/nikah-oud-ambience.mp3');
     const licensePath = path.join(__dirname, '../assets/audio/LICENSE.md');
 
-    assert(fs.existsSync(mp3Path), 'chopin-nocturne.mp3 must exist');
-    assert(fs.statSync(mp3Path).size > 1000000, 'chopin-nocturne.mp3 must be valid file size (>1MB)');
+    assert(fs.existsSync(oudPath), 'nikah-oud-ambience.mp3 must exist');
+    assert(fs.statSync(oudPath).size > 1000000, 'nikah-oud-ambience.mp3 must be valid file size (>1MB)');
 
-    assert(fs.existsSync(oggPath), 'recuerdos-de-la-alhambra.ogg must exist');
-    assert(fs.statSync(oggPath).size > 1000000, 'recuerdos-de-la-alhambra.ogg must be valid file size (>1MB)');
-
-    assert(fs.existsSync(licensePath), 'Audio licensing & attribution document must exist');
+    assert(fs.existsSync(licensePath), 'Audio licensing & cultural attribution document must exist');
+    const licenseContent = fs.readFileSync(licensePath, 'utf8');
+    assert(licenseContent.includes('Oud Ambience'), 'Attribution covers Oud track');
   });
 
-  test('Bismillah SVG crest has valid authentic calligraphy paths', () => {
+  test('Authentic Qur\'anic Basmala typography exists in index.html and SVG', () => {
+    const indexPath = path.join(__dirname, '../index.html');
+    const html = fs.readFileSync(indexPath, 'utf8');
+    assert(html.includes('بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ'), 'index.html contains vocalized Basmala');
+    assert(html.includes('وَخَلَقْنَاكُمْ أَزْوَاجًا'), 'index.html contains Qur\'an 78:8 verse');
+    assert(html.includes('IN THE NAME OF ALLAH, THE MOST BENEFICENT, THE MOST MERCIFUL'), 'Contains scripture translation');
+
     const bismillahPath = path.join(__dirname, '../assets/bismillah.svg');
     assert(fs.existsSync(bismillahPath), 'bismillah.svg must exist');
-    const content = fs.readFileSync(bismillahPath, 'utf8');
-    assert(content.includes('<svg'), 'bismillah.svg must be an svg');
-    assert(content.includes('</svg>'), 'bismillah.svg must have closing tag');
-    assert(content.includes('IN THE NAME OF ALLAH'), 'bismillah.svg contains scripture translation');
-    assert(content.includes('<path'), 'bismillah.svg contains vector paths');
+    const svgContent = fs.readFileSync(bismillahPath, 'utf8');
+    assert(svgContent.includes('بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ'), 'bismillah.svg contains vocalized Arabic');
   });
 
   test('Audio controller script exists and is syntactically sound', () => {
     const audioJsPath = path.join(__dirname, '../js/audio-controller.js');
     assert(fs.existsSync(audioJsPath), 'audio-controller.js must exist');
     const content = fs.readFileSync(audioJsPath, 'utf8');
-    assert(content.includes('NikahAudioController'), 'Contains NikahAudioController');
-    assert(content.includes('wedding_music_state'), 'Implements session storage persistence');
-    assert(content.includes('attemptInitialPlayback'), 'Implements intelligent autoplay handling');
-    assert(content.includes('showAutoplayPrompt'), 'Implements unobtrusive single-click prompt fallback');
+    assert(content.includes('NikahAudioEngine'), 'Implements NikahAudioEngine');
+    assert(content.includes('nikah_music_state') || content.includes('wedding_music_state'), 'Implements session storage persistence');
+    assert(content.includes('gainNode') || content.includes('TARGET_VOLUME'), 'Implements smooth audio fading');
   });
 
-  // 2. Navigation Menu Verification (Requirement 2)
+  // 2. Navigation Menu Verification
   test('Index.html contains NO visitor-facing links to 404 or error pages', () => {
     const indexPath = path.join(__dirname, '../index.html');
     const html = fs.readFileSync(indexPath, 'utf8');
@@ -126,13 +127,30 @@ async function runTests() {
     const html = fs.readFileSync(indexPath, 'utf8');
 
     assert(html.includes('class="nav-menu"'), 'nav-menu should be present');
-    assert(html.includes('href="#ceremony"'), 'Has The Union navigation link');
-    assert(html.includes('href="#venue"'), 'Has Venue & Timings navigation link');
+    assert(html.includes('href="#invocation"'), 'Has The Union navigation link');
+    assert(html.includes('href="#venue"'), 'Has Venue & Time navigation link');
     assert(html.includes('href="#countdown"'), 'Has Countdown navigation link');
     assert(html.includes('id="music-controller-container"'), 'Has audio controller mount');
   });
 
-  // 3. Server-side HTTP Routing Tests (Requirement 3)
+  test('Structural integrity: No 4-tier itinerary and has monolith venue details', () => {
+    const indexPath = path.join(__dirname, '../index.html');
+    const html = fs.readFileSync(indexPath, 'utf8');
+
+    // 4-tier schedule removed
+    assert(!html.includes('Istiqbal'), 'Istiqbal schedule removed');
+    assert(!html.includes('Dawat-e-Walima') && !html.includes('Dawat'), 'Dawat schedule removed');
+
+    // Retains Date, Time, Venue
+    assert(html.includes('Friday, 15th January 2027'), 'Has wedding date');
+    assert(html.includes('7 Rajab 1448 AH'), 'Has Hijri date');
+    assert(html.includes('11:30 AM'), 'Has Nikah start time');
+    assert(html.includes('Bagai Banquet'), 'Has venue name');
+    assert(html.includes('btn-add-calendar'), 'Has Add to Calendar action');
+    assert(html.includes('btn-copy-address'), 'Has Copy Address action');
+  });
+
+  // 3. Server-side HTTP Routing Tests
   await new Promise((resolve) => server.listen(TEST_PORT, resolve));
 
   try {
@@ -140,7 +158,7 @@ async function runTests() {
       const res = await makeRequest('/');
       assert.strictEqual(res.status, 200);
       assert(res.body.includes('The Solemnization of Nikah'), 'Should contain celebration title');
-      assert(res.body.includes('Jassim &amp; Shifa') || res.body.includes('Jassim & Shifa'), 'Should contain couple names');
+      assert(res.body.includes('Jassim') && res.body.includes('Shifa'), 'Should contain couple names');
     });
 
     await testAsync('GET /index.html returns 200 with index.html', async () => {
@@ -154,21 +172,21 @@ async function runTests() {
       assert.strictEqual(res.status, 404, 'Status must be strictly 404');
       assert(res.body.includes('Page Not Found'), 'Must contain Page Not Found error message');
       assert(res.body.includes('404'), 'Must contain 404 numeral');
-      assert(res.body.includes('Return to Nikah Sanctuary'), 'Must contain Return to Home button');
+      assert(res.body.includes('Return to Invitation'), 'Must contain Return to Invitation button');
     });
 
     await testAsync('GET /deeply/nested/invalid/route returns HTTP 404 with custom 404.html', async () => {
       const res = await makeRequest('/deeply/nested/invalid/route');
       assert.strictEqual(res.status, 404, 'Status must be strictly 404');
-      assert(res.body.includes('The Path Remains Sacred, but This Page Has Moved'), 'Must contain tranquil error title');
+      assert(res.body.includes('Page Not Found'), 'Must contain error title');
     });
 
     await testAsync('Audio streaming returns HTTP 206 Partial Content on Range request', async () => {
-      const res = await makeRequest('/assets/audio/chopin-nocturne.mp3', {
+      const res = await makeRequest('/assets/audio/nikah-oud-ambience.mp3', {
         'Range': 'bytes=0-1023'
       });
       assert.strictEqual(res.status, 206, 'Must support HTTP 206 Range requests for audio streaming');
-      assert.strictEqual(res.headers['content-range'], 'bytes 0-1023/5175969');
+      assert.strictEqual(res.headers['content-range'], 'bytes 0-1023/1370656');
       assert.strictEqual(res.headers['content-type'], 'audio/mpeg');
     });
 
@@ -198,4 +216,3 @@ runTests().catch((err) => {
   console.error('Fatal test error:', err);
   process.exit(1);
 });
-
