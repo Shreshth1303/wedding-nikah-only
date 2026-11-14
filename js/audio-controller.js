@@ -26,11 +26,11 @@
   };
 
   const PRIMARY_TRACK = {
-    id: 'oud',
-    title: 'Traditional Solo Oud Ambience',
-    subtitle: 'Andy R. Jordan · Serene Acoustic Oud (CC BY-SA 3.0)',
-    shortName: 'Oud Ambience',
-    src: 'assets/audio/nikah-oud-ambience.mp3',
+    id: 'soothing-serenade',
+    title: 'Water Lily · Soothing Acoustic Serenade',
+    subtitle: 'Kevin MacLeod · Serene Acoustic Harp & Guitar (CC BY 4.0)',
+    shortName: 'Soothing Serenade',
+    src: 'assets/audio/soothing-serenade.mp3',
     type: 'audio/mpeg'
   };
 
@@ -443,14 +443,14 @@
       pill.setAttribute('role', 'region');
       pill.setAttribute('aria-label', 'Background Ambience Controller');
       pill.innerHTML = `
-        <button type="button" id="pill-audio-action" class="pill-audio-action" aria-label="Toggle Oud Ambience Music">
+        <button type="button" id="pill-audio-action" class="pill-audio-action" aria-label="Toggle Soothing Ambient Music">
           <span class="audio-equalizer ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'playing' : ''}" aria-hidden="true">
             <span class="eq-bar eq-1"></span>
             <span class="eq-bar eq-2"></span>
             <span class="eq-bar eq-3"></span>
           </span>
           <span class="pill-label-text" id="pill-label-text">
-            ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'Oud Ambience' : 'Play Music ♫'}
+            ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'Soothing Serenade' : 'Play Music ♫'}
           </span>
         </button>
       `;
@@ -518,7 +518,7 @@
         pill.classList.add('visible');
       }
       if (pillLabel) {
-        pillLabel.textContent = isAudible ? 'Oud Ambience' : 'Play Music ♫';
+        pillLabel.textContent = isAudible ? 'Soothing Serenade' : 'Play Music ♫';
       }
 
       // Update equalizers

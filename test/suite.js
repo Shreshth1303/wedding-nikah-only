@@ -62,16 +62,16 @@ async function runTests() {
   }
 
   // 1. Static Asset Integrity Tests
-  test('Acoustic Oud ambient audio file exists with valid non-empty byte counts', () => {
-    const oudPath = path.join(__dirname, '../assets/audio/nikah-oud-ambience.mp3');
+  test('Soothing ambient serenade audio file exists with valid non-empty byte counts', () => {
+    const audioPath = path.join(__dirname, '../assets/audio/soothing-serenade.mp3');
     const licensePath = path.join(__dirname, '../assets/audio/LICENSE.md');
 
-    assert(fs.existsSync(oudPath), 'nikah-oud-ambience.mp3 must exist');
-    assert(fs.statSync(oudPath).size > 1000000, 'nikah-oud-ambience.mp3 must be valid file size (>1MB)');
+    assert(fs.existsSync(audioPath), 'soothing-serenade.mp3 must exist');
+    assert(fs.statSync(audioPath).size > 1000000, 'soothing-serenade.mp3 must be valid file size (>1MB)');
 
     assert(fs.existsSync(licensePath), 'Audio licensing & cultural attribution document must exist');
     const licenseContent = fs.readFileSync(licensePath, 'utf8');
-    assert(licenseContent.includes('Oud Ambience'), 'Attribution covers Oud track');
+    assert(licenseContent.includes('Water Lily'), 'Attribution covers Water Lily soothing track');
   });
 
   test('Authentic Qur\'anic Basmala typography exists in index.html and SVG', () => {
@@ -122,14 +122,17 @@ async function runTests() {
     }
   });
 
-  test('Navigation menu contains legitimate sections only', () => {
+  test('Navigation menu contains legitimate sections only (countdown removed)', () => {
     const indexPath = path.join(__dirname, '../index.html');
     const html = fs.readFileSync(indexPath, 'utf8');
 
     assert(html.includes('class="nav-menu"'), 'nav-menu should be present');
     assert(html.includes('href="#invocation"'), 'Has The Union navigation link');
-    assert(html.includes('href="#venue"'), 'Has Venue & Time navigation link');
-    assert(html.includes('href="#countdown"'), 'Has Countdown navigation link');
+    assert(html.includes('href="#venue"'), 'Has Venue & Details navigation link');
+    // Ensure Countdown is removed from the top navigation
+    const navMenuMatch = html.match(/<nav class="nav-menu"[^>]*>([\s\S]*?)<\/nav>/);
+    assert(navMenuMatch, 'nav-menu element must exist');
+    assert(!navMenuMatch[1].includes('countdown'), 'Countdown option must be removed from the top navigation menu');
     assert(html.includes('id="music-controller-container"'), 'Has audio controller mount');
   });
 
@@ -182,11 +185,11 @@ async function runTests() {
     });
 
     await testAsync('Audio streaming returns HTTP 206 Partial Content on Range request', async () => {
-      const res = await makeRequest('/assets/audio/nikah-oud-ambience.mp3', {
+      const res = await makeRequest('/assets/audio/soothing-serenade.mp3', {
         'Range': 'bytes=0-1023'
       });
       assert.strictEqual(res.status, 206, 'Must support HTTP 206 Range requests for audio streaming');
-      assert.strictEqual(res.headers['content-range'], 'bytes 0-1023/1370656');
+      assert.strictEqual(res.headers['content-range'], 'bytes 0-1023/4612305');
       assert.strictEqual(res.headers['content-type'], 'audio/mpeg');
     });
 
