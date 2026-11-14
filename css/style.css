@@ -438,9 +438,20 @@ body::before {
   margin-right: auto;
 }
 
+.editorial-invitation-badge {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent-bronze);
+  margin-bottom: 20px;
+}
+
 /* Couple Names Display (Cinzel Editorial Scale) */
 .couple-editorial-display {
-  margin: 20px 0 32px 0;
+  margin: 12px 0 36px 0;
 }
 
 .couple-title-name {
@@ -716,9 +727,9 @@ body::before {
   border-radius: 9999px;
   padding: 4px;
   box-shadow: 0 4px 18px rgba(28, 25, 23, 0.08);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
   transition: all 0.35s var(--ease-editorial);
 }
 
@@ -726,6 +737,19 @@ body::before {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+@keyframes pillPulse {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(28, 25, 23, 0.08), 0 0 0 0 rgba(154, 123, 79, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 18px rgba(28, 25, 23, 0.12), 0 0 0 6px rgba(154, 123, 79, 0);
+  }
+}
+
+.audio-floating-pill:not(.is-playing) {
+  animation: pillPulse 2.4s infinite ease-in-out;
 }
 
 .pill-audio-action {

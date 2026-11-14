@@ -6,7 +6,8 @@
  * - Serene Cultural Ambience: Traditional Acoustic Solo Oud (Andy R. Jordan, CC BY-SA 3.0)
  * - Zero-Console-Error Procedural Web Audio API Ambient Drone Fallback
  * - Browser Autoplay Policy Compliance with Universal First-Gesture Unlocking
- * - Smooth Exponential Volume Fading (1500ms fade-in to 0.30 target volume)
+ * - Rich Audible Volume (0.75 Target Level) with Smooth Volume Ramping
+ * - Double-Trigger Prevention on Mobile & Desktop Interaction
  * - Dual Controller Synchronization: Top Frosted Bar Equalizer & Bottom-Right Floating Pill
  * - Single-instance Lifecycle & Session State Persistence
  */
@@ -21,8 +22,7 @@
   const STORAGE_KEYS = {
     STATE: 'nikah_music_state',
     MUTED: 'nikah_music_muted',
-    TIME: 'nikah_music_time',
-    DISMISSED: 'nikah_music_pill_dismissed'
+    TIME: 'nikah_music_time'
   };
 
   const PRIMARY_TRACK = {
@@ -36,7 +36,7 @@
 
   class NikahAudioEngine {
     constructor() {
-      this.TARGET_VOLUME = 0.30;
+      this.TARGET_VOLUME = 0.75;
       this.audio = null;
       this.audioCtx = null;
       this.synthNodes = null;
@@ -47,6 +47,8 @@
       this.isAutoplayBlocked = false;
       this.isExplicitlyPaused = false;
       this._gestureAttached = false;
+      this._lastActionTime = 0;
+      this._unlockHandler = null;
 
       this.init();
     }
@@ -61,7 +63,6 @@
 
     sanitizeStorage() {
       try {
-        // Purge old keys from previous iterations
         ['wedding_music_track', 'wedding_music_state', 'wedding_music_time'].forEach((k) => {
           sessionStorage.removeItem(k);
         });
@@ -77,14 +78,13 @@
         this.audio.id = 'wedding-audio-element';
         this.audio.preload = 'auto';
         this.audio.loop = true;
-        this.audio.autoplay = true;
         this.audio.setAttribute('playsinline', '');
         this.audio.setAttribute('webkit-playsinline', '');
         this.audio.style.display = 'none';
         document.body.appendChild(this.audio);
       }
 
-      // Configure track source
+      // Ensure track source
       let src = PRIMARY_TRACK.src;
       const base = document.querySelector('base');
       if (!base && !src.startsWith('/') && !src.startsWith('http')) {
@@ -103,12 +103,11 @@
         }
       } catch (e) {}
 
-      // Muted state restoration
+      // Default audio parameters
+      this.audio.muted = false;
       try {
-        this.audio.muted = sessionStorage.getItem(STORAGE_KEYS.MUTED) === 'true';
-      } catch (e) {
-        this.audio.muted = false;
-      }
+        this.audio.volume = this.TARGET_VOLUME;
+      } catch (e) {}
 
       // Event listeners for state sync
       this.audio.addEventListener('play', () => {
@@ -130,7 +129,7 @@
       let lastSave = 0;
       this.audio.addEventListener('timeupdate', () => {
         const now = Date.now();
-        if (now - lastSave > 1500) {
+        if (now - lastSave > 2000) {
           lastSave = now;
           if (this.audio && this.audio.currentTime > 0) {
             try {
@@ -142,7 +141,7 @@
 
       // Error handling: Graceful fallback to procedural meditative Web Audio drone
       this.audio.addEventListener('error', () => {
-        console.info('Audio asset streaming note: Activating client-side Web Audio ambient generator.');
+        console.info('Audio asset note: Activating client-side Web Audio ambient generator.');
         this.startSyntheticAmbientFallback();
       });
     }
@@ -163,13 +162,13 @@
         }
 
         const masterGain = this.audioCtx.createGain();
-        masterGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        masterGain.gain.setValueAtTime(this.TARGET_VOLUME * 0.4, this.audioCtx.currentTime);
 
         const filter = this.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(450, this.audioCtx.currentTime);
 
-        // Meditative D Hijaz / D Minor Chime Frequencies: D3 (146.83Hz), A3 (220Hz), D4 (293.66Hz)
+        // Meditative D Hijaz / D Minor Chime Frequencies
         const freqs = [146.83, 220.00, 293.66];
         const oscs = freqs.map((f, i) => {
           const osc = this.audioCtx.createOscillator();
@@ -197,51 +196,33 @@
     }
 
     attemptInitialPlayback() {
-      // Clear any legacy pause state on page entry so visitor enters with music
-      try {
-        sessionStorage.removeItem(STORAGE_KEYS.STATE);
-      } catch (e) {}
-
-      // Try unlocking Web Audio Context if supported
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) {
-          if (!this.audioCtx) this.audioCtx = new AudioCtx();
-          if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().catch(() => {});
-          }
-        }
-      } catch (e) {}
+      // Clear legacy paused key if previously unset
+      const savedState = sessionStorage.getItem(STORAGE_KEYS.STATE);
+      if (savedState === 'paused') {
+        this.isExplicitlyPaused = true;
+        this.updateUI();
+        return;
+      }
 
       this.audio.muted = false;
-      this.audio.volume = 0;
+      try {
+        this.audio.volume = this.TARGET_VOLUME;
+      } catch (e) {}
 
       const playPromise = this.audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          // Autoplay permitted by browser!
+          // Autoplay permitted immediately by browser!
           this.isPlaying = true;
           this.isAutoplayBlocked = false;
-          this.fadeIn(this.TARGET_VOLUME, 1500);
           this.updateUI();
         }).catch((err) => {
-          // Unmuted autoplay held by browser security policy
+          // Unmuted autoplay blocked by browser policy until first user interaction
           this.isAutoplayBlocked = true;
+          this.isPlaying = false;
+          this.updateUI();
 
-          // Step 1: Start muted so streaming starts immediately in background
-          this.audio.muted = true;
-          const mutedPromise = this.audio.play();
-          if (mutedPromise !== undefined) {
-            mutedPromise.then(() => {
-              this.isPlaying = true;
-              this.updateUI();
-            }).catch(() => {});
-          }
-
-          // Step 2: Show minimal floating pill
-          this.showFloatingPill();
-
-          // Step 3: Attach permanent document interaction handler
+          // Attach universal first-gesture listener
           this.attachGestureListener();
         });
       }
@@ -251,20 +232,41 @@
       if (this._gestureAttached) return;
       this._gestureAttached = true;
 
-      const onGesture = (e) => {
-        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.muted || this.audio.paused)) {
+      const unlockHandler = (e) => {
+        // If clicking directly on an audio control button, let that button's click handler manage it
+        if (e && e.target && e.target.closest('#nav-audio-toggle, #pill-audio-action, .editorial-audio-btn, .pill-audio-action')) {
+          return;
+        }
+
+        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused)) {
           this.unlockAndPlay();
+          this.detachGestureListener();
         }
       };
 
-      document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
-      document.addEventListener('click', onGesture, { capture: true, passive: true });
-      document.addEventListener('touchstart', onGesture, { capture: true, passive: true });
-      document.addEventListener('keydown', onGesture, { capture: true, passive: true });
+      this._unlockHandler = unlockHandler;
+      window.addEventListener('pointerdown', unlockHandler, { capture: true, passive: true });
+      window.addEventListener('touchstart', unlockHandler, { capture: true, passive: true });
+      window.addEventListener('click', unlockHandler, { capture: true, passive: true });
+      window.addEventListener('scroll', unlockHandler, { capture: true, passive: true });
+      window.addEventListener('keydown', unlockHandler, { capture: true, passive: true });
+    }
+
+    detachGestureListener() {
+      if (!this._unlockHandler) return;
+      window.removeEventListener('pointerdown', this._unlockHandler, { capture: true });
+      window.removeEventListener('touchstart', this._unlockHandler, { capture: true });
+      window.removeEventListener('click', this._unlockHandler, { capture: true });
+      window.removeEventListener('scroll', this._unlockHandler, { capture: true });
+      window.removeEventListener('keydown', this._unlockHandler, { capture: true });
+      this._unlockHandler = null;
+      this._gestureAttached = false;
     }
 
     unlockAndPlay() {
-      // Resume Web Audio Context
+      this._lastActionTime = Date.now();
+
+      // Resume Web Audio Context if suspended
       try {
         if (this.audioCtx && this.audioCtx.state === 'suspended') {
           this.audioCtx.resume().catch(() => {});
@@ -272,7 +274,7 @@
       } catch (e) {}
 
       if (this.isSynthFallback && this.synthNodes) {
-        this.synthNodes.masterGain.gain.linearRampToValueAtTime(this.TARGET_VOLUME, this.audioCtx.currentTime + 1.2);
+        this.synthNodes.masterGain.gain.setValueAtTime(this.TARGET_VOLUME * 0.4, this.audioCtx.currentTime);
         this.isPlaying = true;
         this.updateUI();
         return;
@@ -282,68 +284,81 @@
 
       this.audio.muted = false;
       this.isAutoplayBlocked = false;
+      this.isExplicitlyPaused = false;
 
-      // If already playing muted, smoothly ramp volume to target
-      if (!this.audio.paused && this.audio.currentTime > 0) {
-        this.isPlaying = true;
-        this.fadeIn(this.TARGET_VOLUME, 1200);
-        this.updateUI();
-        return;
-      }
+      try {
+        this.audio.volume = this.TARGET_VOLUME;
+      } catch (e) {}
 
-      // Otherwise trigger clean playback
-      this.audio.volume = 0;
       const playPromise = this.audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           this.isPlaying = true;
-          this.fadeIn(this.TARGET_VOLUME, 1500);
           this.updateUI();
+          try {
+            sessionStorage.setItem(STORAGE_KEYS.STATE, 'playing');
+          } catch (e) {}
         }).catch((err) => {
-          console.warn('Audio gesture unlock:', err);
+          console.warn('Audio gesture unlock deferred:', err);
         });
       }
     }
 
-    fadeIn(targetVolume, duration = 1500) {
+    fadeIn(targetVolume, duration = 1200) {
       if (!this.audio) return;
       this.isFading = true;
       if (this.fadeInterval) clearInterval(this.fadeInterval);
 
+      let initialVol = 0;
+      try {
+        initialVol = this.audio.volume || 0;
+      } catch (e) {}
+
       const start = Date.now();
-      const initialVol = this.audio.volume;
       const step = 30;
 
       this.fadeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
         const progress = Math.min(1, elapsed / duration);
-        this.audio.volume = initialVol + (targetVolume - initialVol) * progress;
+        try {
+          this.audio.volume = initialVol + (targetVolume - initialVol) * progress;
+        } catch (e) {}
 
         if (progress >= 1) {
           clearInterval(this.fadeInterval);
-          this.audio.volume = targetVolume;
+          try {
+            this.audio.volume = targetVolume;
+          } catch (e) {}
           this.isFading = false;
         }
       }, step);
     }
 
-    fadeOut(targetVolume = 0, duration = 800, onComplete) {
+    fadeOut(targetVolume = 0, duration = 600, onComplete) {
       if (!this.audio) return;
       this.isFading = true;
       if (this.fadeInterval) clearInterval(this.fadeInterval);
 
+      let initialVol = this.TARGET_VOLUME;
+      try {
+        initialVol = this.audio.volume || this.TARGET_VOLUME;
+      } catch (e) {}
+
       const start = Date.now();
-      const initialVol = this.audio.volume;
       const step = 30;
 
       this.fadeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
         const progress = Math.min(1, elapsed / duration);
-        this.audio.volume = Math.max(0, initialVol - (initialVol - targetVolume) * progress);
+        try {
+          this.audio.volume = Math.max(0, initialVol - (initialVol - targetVolume) * progress);
+        } catch (e) {}
 
         if (progress >= 1) {
           clearInterval(this.fadeInterval);
-          this.audio.volume = targetVolume;
+          try {
+            this.audio.volume = targetVolume;
+          } catch (e) {}
           this.isFading = false;
           if (typeof onComplete === 'function') onComplete();
         }
@@ -351,7 +366,19 @@
     }
 
     togglePlayPause() {
-      if (this.isPlaying && !this.audio.paused && !this.audio.muted) {
+      // Debounce rapid clicking
+      const now = Date.now();
+      if (now - this._lastActionTime < 300) {
+        return;
+      }
+      this._lastActionTime = now;
+
+      // Ensure gesture listener is detached
+      this.detachGestureListener();
+
+      const isAudible = this.isPlaying && this.audio && !this.audio.paused && !this.audio.muted;
+
+      if (isAudible) {
         this.isExplicitlyPaused = true;
         this.pauseWithFade();
         try {
@@ -360,33 +387,22 @@
       } else {
         this.isExplicitlyPaused = false;
         this.unlockAndPlay();
-        try {
-          sessionStorage.setItem(STORAGE_KEYS.STATE, 'playing');
-        } catch (e) {}
       }
     }
 
     pauseWithFade() {
-      if (!this.audio || !this.isPlaying) return;
-      this.fadeOut(0.001, 800, () => {
-        this.audio.pause();
+      if (!this.audio) return;
+      this.fadeOut(0.001, 500, () => {
+        if (this.audio) {
+          this.audio.pause();
+          try {
+            this.audio.volume = this.TARGET_VOLUME;
+          } catch (e) {}
+        }
         this.isPlaying = false;
         this.isFading = false;
-        this.audio.volume = this.TARGET_VOLUME;
         this.updateUI();
       });
-    }
-
-    toggleMute() {
-      if (!this.audio) return;
-      this.audio.muted = !this.audio.muted;
-      try {
-        sessionStorage.setItem(STORAGE_KEYS.MUTED, String(this.audio.muted));
-      } catch (e) {}
-      if (!this.audio.muted && this.audio.volume === 0) {
-        this.fadeIn(this.TARGET_VOLUME, 800);
-      }
-      this.updateUI();
     }
 
     /* ========================================================================
@@ -402,13 +418,13 @@
                   class="editorial-audio-btn" 
                   aria-label="Toggle Sacred Background Ambience"
                   aria-pressed="${this.isPlaying}">
-            <span class="audio-equalizer ${this.isPlaying && !this.audio.muted ? 'playing' : ''}" aria-hidden="true">
+            <span class="audio-equalizer ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'playing' : ''}" aria-hidden="true">
               <span class="eq-bar eq-1"></span>
               <span class="eq-bar eq-2"></span>
               <span class="eq-bar eq-3"></span>
             </span>
             <span class="audio-status-label" id="nav-audio-label">
-              ${this.isPlaying && !this.audio.muted ? 'Ambience On' : 'Play Ambience'}
+              ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'Ambience On' : 'Play Ambience'}
             </span>
           </button>
         `;
@@ -423,18 +439,18 @@
 
       const pill = document.createElement('div');
       pill.id = 'audio-floating-pill';
-      pill.className = 'audio-floating-pill';
+      pill.className = 'audio-floating-pill visible';
       pill.setAttribute('role', 'region');
       pill.setAttribute('aria-label', 'Background Ambience Controller');
       pill.innerHTML = `
         <button type="button" id="pill-audio-action" class="pill-audio-action" aria-label="Toggle Oud Ambience Music">
-          <span class="audio-equalizer ${this.isPlaying && !this.audio.muted ? 'playing' : ''}" aria-hidden="true">
+          <span class="audio-equalizer ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'playing' : ''}" aria-hidden="true">
             <span class="eq-bar eq-1"></span>
             <span class="eq-bar eq-2"></span>
             <span class="eq-bar eq-3"></span>
           </span>
           <span class="pill-label-text" id="pill-label-text">
-            ${this.isPlaying && !this.audio.muted ? 'Oud Ambience' : 'Play Ambience'}
+            ${this.isPlaying && !this.audio.muted && !this.audio.paused ? 'Oud Ambience' : 'Play Music ♫'}
           </span>
         </button>
       `;
@@ -442,21 +458,13 @@
       document.body.appendChild(pill);
     }
 
-    showFloatingPill() {
-      setTimeout(() => {
-        const pill = document.getElementById('audio-floating-pill');
-        if (pill) {
-          pill.classList.add('visible');
-        }
-      }, 400);
-    }
-
     bindEvents() {
-      // Top navbar button click
+      // Direct click handler for audio buttons
       document.addEventListener('click', (e) => {
         const navBtn = e.target.closest('#nav-audio-toggle');
         if (navBtn) {
           e.preventDefault();
+          e.stopPropagation();
           this.togglePlayPause();
           return;
         }
@@ -464,13 +472,9 @@
         const pillAction = e.target.closest('#pill-audio-action');
         if (pillAction) {
           e.preventDefault();
+          e.stopPropagation();
           this.togglePlayPause();
           return;
-        }
-
-        // Global click to unlock audio if not already playing
-        if (!this.isExplicitlyPaused && (!this.isPlaying || this.audio.paused || this.audio.muted)) {
-          this.unlockAndPlay();
         }
       });
 
@@ -514,7 +518,7 @@
         pill.classList.add('visible');
       }
       if (pillLabel) {
-        pillLabel.textContent = isAudible ? 'Oud Ambience' : 'Play Ambience';
+        pillLabel.textContent = isAudible ? 'Oud Ambience' : 'Play Music ♫';
       }
 
       // Update equalizers
