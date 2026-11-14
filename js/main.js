@@ -304,11 +304,25 @@ function initBlessingsWall() {
 
   const STORAGE_KEY = 'nikah_guest_blessings';
 
+  function isDotOnly(str) {
+    if (!str) return true;
+    const trimmed = str.trim();
+    return trimmed === '' || /^\.+$/.test(trimmed);
+  }
+
   function getStoredBlessings() {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (data) {
-        return JSON.parse(data);
+        let list = JSON.parse(data);
+        if (Array.isArray(list)) {
+          // Permanently purge any comment with name '.' or empty
+          const cleaned = list.filter(b => b && b.name && !isDotOnly(b.name));
+          if (cleaned.length !== list.length) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+          }
+          return cleaned;
+        }
       }
     } catch (e) {}
     return DEFAULT_BLESSINGS;
@@ -316,7 +330,8 @@ function initBlessingsWall() {
 
   function saveBlessings(items) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      const cleaned = items.filter(b => b && b.name && !isDotOnly(b.name));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
     } catch (e) {}
   }
 
@@ -324,19 +339,38 @@ function initBlessingsWall() {
     const list = getStoredBlessings();
     grid.innerHTML = '';
 
-    list.forEach((b) => {
+    list.forEach((b, index) => {
       const card = document.createElement('div');
       card.className = 'blessing-card';
       card.innerHTML = `
         <div class="blessing-card-header">
           <span class="blessing-author">${escapeHtml(b.name)}</span>
-          <span class="blessing-badge">${escapeHtml(b.date || 'Blessed Prayer')}</span>
+          <div class="blessing-actions">
+            <span class="blessing-badge">${escapeHtml(b.date || 'Blessed Prayer')}</span>
+            <button type="button" class="btn-delete-card" data-index="${index}" aria-label="Remove this comment" title="Remove comment">&times;</button>
+          </div>
         </div>
         <p class="blessing-text">${escapeHtml(b.message)}</p>
       `;
       grid.appendChild(card);
     });
   }
+
+  // Allow deleting comments with click on delete button
+  grid.addEventListener('click', (e) => {
+    const delBtn = e.target.closest('.btn-delete-card');
+    if (delBtn) {
+      e.preventDefault();
+      const idx = parseInt(delBtn.getAttribute('data-index'), 10);
+      const list = getStoredBlessings();
+      if (!isNaN(idx) && idx >= 0 && idx < list.length) {
+        list.splice(idx, 1);
+        saveBlessings(list);
+        renderBlessings();
+        showMicroToast('Comment removed');
+      }
+    }
+  });
 
   function escapeHtml(str) {
     return String(str)
@@ -366,7 +400,14 @@ function initBlessingsWall() {
     const name = (nameInput.value || '').trim();
     const msg = (messageInput.value || '').trim();
 
-    if (!name || !msg) return;
+    if (!name || isDotOnly(name)) {
+      showMicroToast('Please enter your name');
+      return;
+    }
+    if (!msg) {
+      showMicroToast('Please write a message or du’a');
+      return;
+    }
 
     const list = getStoredBlessings();
     list.unshift({
