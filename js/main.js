@@ -1,17 +1,151 @@
 /**
  * THE SOLEMNIZATION OF NIKAH — JASSIM HASHIM & SHIFA ANIS KHAN
- * Contemporary Architectural Editorial Interaction Suite
+ * Luxury Contemporary Architectural Interaction Suite
+ * 
+ * Features:
+ * - Bespoke 3D Royal Wax Seal Envelope Opening Experience
+ * - 60fps Floating Golden Dust Ambient Canvas
+ * - Live Architectural Chronometer (Countdown)
+ * - Interactive Digital Du'a & Blessing Wall with Persistent Storage
+ * - Dynamic .ics Calendar Generator for Jan 15, 2027 at 11:30 AM IST
+ * - Venue Address Clipboard with Real-Time Micro-Toast
+ * - Archival Keepsake Print Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initAmbientGoldParticles();
+  initEnvelopeCeremony();
   initLiveCountdown();
   initCalendarDownload();
   initAddressClipboard();
+  initBlessingsWall();
   initPrintTrigger();
 });
 
 /* ==========================================================================
-   1. ARCHITECTURAL LIVE COUNTDOWN
+   1. FLOATING GOLDEN DUST AMBIENT CANVAS (60FPS)
+   ========================================================================== */
+function initAmbientGoldParticles() {
+  const canvas = document.getElementById('ambient-gold-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  const particleCount = Math.min(38, Math.floor(width / 32));
+  const particles = [];
+
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 2.2 + 0.8,
+      speedX: (Math.random() - 0.5) * 0.35,
+      speedY: -Math.random() * 0.45 - 0.15,
+      alpha: Math.random() * 0.55 + 0.15,
+      fadeSpeed: Math.random() * 0.008 + 0.003,
+      fadeDirection: Math.random() > 0.5 ? 1 : -1
+    });
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      p.x += p.speedX;
+      p.y += p.speedY;
+      p.alpha += p.fadeSpeed * p.fadeDirection;
+
+      if (p.alpha <= 0.08) {
+        p.alpha = 0.08;
+        p.fadeDirection = 1;
+      } else if (p.alpha >= 0.7) {
+        p.alpha = 0.7;
+        p.fadeDirection = -1;
+      }
+
+      if (p.y < -10) {
+        p.y = height + 10;
+        p.x = Math.random() * width;
+      }
+      if (p.x < -10) p.x = width + 10;
+      if (p.x > width + 10) p.x = -10;
+
+      // Draw soft glowing gold dust mote
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180, 142, 85, ${p.alpha})`;
+      ctx.shadowBlur = p.radius * 3;
+      ctx.shadowColor = 'rgba(218, 175, 110, 0.45)';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  render();
+}
+
+/* ==========================================================================
+   2. BESPOKE ROYAL WAX SEAL ENVELOPE OPENING CEREMONY
+   ========================================================================== */
+function initEnvelopeCeremony() {
+  const overlay = document.getElementById('envelope-ceremony-overlay');
+  const sealBtn = document.getElementById('btn-open-seal');
+  const skipBtn = document.getElementById('btn-skip-envelope');
+  if (!overlay || !sealBtn) return;
+
+  const STORAGE_KEY = 'nikah_envelope_opened';
+
+  // Check if previously opened in this session
+  if (sessionStorage.getItem(STORAGE_KEY) === 'true') {
+    overlay.classList.add('is-opened');
+    overlay.style.display = 'none';
+    return;
+  }
+
+  function openEnvelope(triggerAudio = true) {
+    overlay.classList.add('is-opening');
+
+    if (triggerAudio && window.__NIKAH_AUDIO_ENGINE__) {
+      window.__NIKAH_AUDIO_ENGINE__.unlockAndPlay();
+    }
+
+    setTimeout(() => {
+      overlay.classList.add('is-opened');
+      try {
+        sessionStorage.setItem(STORAGE_KEY, 'true');
+      } catch (e) {}
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 700);
+    }, 600);
+  }
+
+  sealBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openEnvelope(true);
+  });
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openEnvelope(false);
+    });
+  }
+}
+
+/* ==========================================================================
+   3. ARCHITECTURAL LIVE COUNTDOWN
    Target: Friday, 15th January 2027 at 11:30 AM IST (UTC+05:30)
    ========================================================================== */
 function initLiveCountdown() {
@@ -54,7 +188,7 @@ function initLiveCountdown() {
 }
 
 /* ==========================================================================
-   2. CLIENT-SIDE .ICS CALENDAR GENERATOR
+   4. CLIENT-SIDE .ICS CALENDAR GENERATOR
    ========================================================================== */
 function initCalendarDownload() {
   const btn = document.getElementById('btn-add-calendar');
@@ -65,7 +199,7 @@ function initCalendarDownload() {
 
     const eventData = {
       title: 'Solemnization of Nikah: Jassim & Shifa',
-      description: "Under the grace of the Almighty, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nDate: Friday, 15th January 2027 at 11:30 AM IST\\nVenue: Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik",
+      description: "Under the grace of the Almighty Allah, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nDate: Friday, 15th January 2027 at 11:30 AM IST\\nVenue: Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik",
       location: 'Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik, Maharashtra 422011',
       startISO: '20270115T060000Z', // 11:30 AM IST is 06:00 AM UTC
       endISO: '20270115T103000Z'    // 04:00 PM IST is 10:30 AM UTC
@@ -107,7 +241,7 @@ function initCalendarDownload() {
 }
 
 /* ==========================================================================
-   3. VENUE ADDRESS CLIPBOARD WITH INLINE FEEDBACK
+   5. VENUE ADDRESS CLIPBOARD WITH INLINE FEEDBACK
    ========================================================================== */
 function initAddressClipboard() {
   const copyBtn = document.getElementById('btn-copy-address');
@@ -139,7 +273,120 @@ function initAddressClipboard() {
 }
 
 /* ==========================================================================
-   4. ARCHIVAL KEEPSAKE PRINT TRIGGER
+   6. INTERACTIVE DIGITAL DU'A & BLESSINGS WALL
+   ========================================================================== */
+function initBlessingsWall() {
+  const form = document.getElementById('blessing-form');
+  const grid = document.getElementById('blessings-wall-grid');
+  const quickTags = document.querySelectorAll('.tag-pill');
+  const messageInput = document.getElementById('guest-message');
+  const nameInput = document.getElementById('guest-name');
+  if (!grid || !form) return;
+
+  // Default curated blessings
+  const DEFAULT_BLESSINGS = [
+    {
+      name: 'Family Elders',
+      message: 'بَارَكَ ٱللَّٰهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ. May the Almighty shower His infinite grace, tranquility, and perpetual barakah upon Jassim & Shifa.',
+      date: 'Blessing of Du’a'
+    },
+    {
+      name: 'The Khan & Hashim Families',
+      message: 'May your union be blessed with deep affection, enduring patience, and mutual joy as you embark on this sacred path together.',
+      date: 'Family Prayer'
+    },
+    {
+      name: 'Well-Wishers',
+      message: 'Warmest heartfelt congratulations to Jassim and Shifa! Wishing you a blessed, pious, and joyous married life ahead.',
+      date: 'Celebration Blessing'
+    }
+  ];
+
+  const STORAGE_KEY = 'nikah_guest_blessings';
+
+  function getStoredBlessings() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) {
+        return JSON.parse(data);
+      }
+    } catch (e) {}
+    return DEFAULT_BLESSINGS;
+  }
+
+  function saveBlessings(items) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {}
+  }
+
+  function renderBlessings() {
+    const list = getStoredBlessings();
+    grid.innerHTML = '';
+
+    list.forEach((b) => {
+      const card = document.createElement('div');
+      card.className = 'blessing-card';
+      card.innerHTML = `
+        <div class="blessing-card-header">
+          <span class="blessing-author">${escapeHtml(b.name)}</span>
+          <span class="blessing-badge">${escapeHtml(b.date || 'Blessed Prayer')}</span>
+        </div>
+        <p class="blessing-text">${escapeHtml(b.message)}</p>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Quick tag filler
+  quickTags.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const dua = pill.getAttribute('data-dua');
+      if (dua && messageInput) {
+        messageInput.value = dua;
+        messageInput.focus();
+        showMicroToast('Du’a added to message box');
+      }
+    });
+  });
+
+  // Form submission
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = (nameInput.value || '').trim();
+    const msg = (messageInput.value || '').trim();
+
+    if (!name || !msg) return;
+
+    const list = getStoredBlessings();
+    list.unshift({
+      name: name,
+      message: msg,
+      date: 'Just now'
+    });
+
+    saveBlessings(list);
+    renderBlessings();
+
+    form.reset();
+    showMicroToast('JazakAllah Khair! Your du’a has been shared.');
+  });
+
+  renderBlessings();
+}
+
+/* ==========================================================================
+   7. ARCHIVAL KEEPSAKE PRINT TRIGGER
    ========================================================================== */
 function initPrintTrigger() {
   const printBtn = document.getElementById('btn-print-invitation');
@@ -151,7 +398,7 @@ function initPrintTrigger() {
 }
 
 /* ==========================================================================
-   5. MINIMALIST MICRO-TOAST NOTIFICATION
+   8. MINIMALIST MICRO-TOAST NOTIFICATION
    ========================================================================== */
 let toastTimer = null;
 function showMicroToast(message) {
@@ -169,5 +416,5 @@ function showMicroToast(message) {
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
     toast.classList.remove('is-visible');
-  }, 3000);
+  }, 3200);
 }

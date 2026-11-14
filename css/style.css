@@ -73,6 +73,233 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
+/* Ambient Golden Dust Canvas */
+.ambient-gold-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   2.1 BESPOKE ROYAL WAX SEAL ENVELOPE OPENING CEREMONY
+   ========================================================================== */
+.envelope-ceremony-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: rgba(246, 244, 238, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.75s var(--ease-editorial), visibility 0.75s var(--ease-editorial);
+  perspective: 1200px;
+}
+
+.envelope-ceremony-overlay.is-opening {
+  opacity: 0.95;
+}
+
+.envelope-ceremony-overlay.is-opened {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.envelope-modal-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.envelope-card-wrapper {
+  position: relative;
+  width: 100%;
+  background: #FCFBF8;
+  border: 1px solid var(--border-hairline);
+  box-shadow: 0 10px 40px -10px rgba(28, 25, 23, 0.12), 0 30px 80px -20px rgba(154, 123, 79, 0.15);
+  border-radius: 4px;
+  padding: 48px 32px 40px 32px;
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.8s var(--ease-editorial);
+}
+
+.envelope-ceremony-overlay.is-opening .envelope-card-wrapper {
+  transform: translateY(-20px) scale(1.02);
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: #F4EFE6;
+  border-bottom: 1px solid rgba(154, 123, 79, 0.25);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.65s ease;
+}
+
+.envelope-ceremony-overlay.is-opening .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+/* Royal 3D Burnished Bronze Wax Seal */
+.wax-seal-button {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px auto 28px auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.wax-seal-outer {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #BA9762 0%, #9A7B4F 55%, #6D532F 100%);
+  box-shadow: 0 6px 18px rgba(109, 83, 47, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.wax-seal-button:hover .wax-seal-outer,
+.wax-seal-button:focus-visible .wax-seal-outer {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(154, 123, 79, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.wax-seal-inner {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #FCFBF8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.seal-kicker {
+  font-family: var(--font-ui);
+  font-size: 8px;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.seal-monogram-initials {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin: 1px 0;
+}
+
+.seal-date {
+  font-family: var(--font-ui);
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
+}
+
+.seal-pulse-wave {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-bronze);
+  opacity: 0;
+  animation: sealPulse 2.4s infinite ease-out;
+}
+
+@keyframes sealPulse {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  60% { transform: scale(1.3); opacity: 0; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.envelope-basmala-micro {
+  font-family: var(--font-arabic);
+  font-size: 1.4rem;
+  color: var(--ink-primary);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.envelope-call-kicker {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent-bronze);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.envelope-names {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-primary);
+  margin-bottom: 20px;
+}
+
+.envelope-tap-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-bronze);
+  font-weight: 500;
+  padding: 6px 14px;
+  background: rgba(154, 123, 79, 0.08);
+  border-radius: 9999px;
+}
+
+.btn-skip-envelope {
+  margin-top: 18px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.btn-skip-envelope:hover {
+  opacity: 1;
+  color: var(--ink-primary);
+}
+
 /* Accessible Screen Reader Helper */
 .visually-hidden {
   position: absolute;
@@ -430,9 +657,39 @@ body::before {
   color: var(--accent-bronze);
 }
 
+/* Royal Interlocking Monogram Emblem */
+.royal-monogram-seal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto 14px auto;
+}
+
 /* Couple Names Display (Hero Climax in Cinzel Display) */
 .couple-editorial-display {
   margin: 12px 0 44px 0;
+}
+
+.gold-shimmer-text {
+  background: linear-gradient(
+    115deg,
+    #1C1917 0%,
+    #1C1917 38%,
+    #BA9762 50%,
+    #1C1917 62%,
+    #1C1917 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldShimmer 8s infinite ease-in-out;
+}
+
+@keyframes goldShimmer {
+  0% { background-position: 100% 0; }
+  22% { background-position: -100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 .couple-title-name {
@@ -757,6 +1014,197 @@ body::before {
 }
 
 /* ==========================================================================
+   7.1 SACRED DU'A & BLESSINGS WALL (GUESTBOOK)
+   ========================================================================== */
+.blessings-section {
+  margin: 56px auto 72px auto;
+  max-width: 680px;
+}
+
+.blessings-container {
+  background: #FCFBF8;
+  border: 1px solid var(--border-hairline);
+  padding: 36px 28px;
+  border-radius: 2px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.02), 0 12px 32px -8px rgba(28, 25, 23, 0.04);
+}
+
+.blessings-kicker {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent-bronze);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.blessings-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-primary);
+  margin-bottom: 8px;
+}
+
+.blessings-subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  color: var(--ink-secondary);
+  font-style: italic;
+  max-width: 520px;
+  margin: 0 auto 24px auto;
+  line-height: 1.55;
+}
+
+/* Quick Du'a Tag Pills */
+.blessings-quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tag-pill {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--ink-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-pill:hover {
+  border-color: var(--accent-bronze);
+  color: var(--ink-primary);
+  background: rgba(154, 123, 79, 0.06);
+}
+
+/* Form Styles */
+.blessing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.form-inputs-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input-editorial,
+.textarea-editorial {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  padding: 10px 14px;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--ink-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-editorial:focus,
+.textarea-editorial:focus {
+  outline: none;
+  border-color: var(--accent-bronze);
+  box-shadow: 0 0 0 2px rgba(154, 123, 79, 0.15);
+}
+
+.textarea-editorial {
+  resize: vertical;
+  min-height: 56px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+}
+
+.btn-submit-blessing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ink-primary);
+  border: 1px solid var(--ink-primary);
+  color: #FCFBF8;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.btn-submit-blessing:hover {
+  background: var(--accent-bronze);
+  border-color: var(--accent-bronze);
+}
+
+/* Blessings Wall Stream */
+.blessings-wall-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.blessing-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-hairline);
+  padding: 16px 20px;
+  border-radius: 2px;
+  animation: cardFadeIn 0.4s var(--ease-editorial);
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.blessing-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.blessing-author {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink-primary);
+}
+
+.blessing-badge {
+  font-family: var(--font-ui);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-bronze);
+  font-weight: 600;
+}
+
+.blessing-text {
+  font-family: var(--font-serif);
+  font-size: 0.98rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
    8. CLOSING DU'A FOOTER
    ========================================================================== */
 .editorial-footer {
@@ -1020,6 +1468,9 @@ body::before {
   .editorial-actions-row,
   .countdown-monolith,
   .editorial-toast,
+  .envelope-ceremony-overlay,
+  .ambient-gold-canvas,
+  .blessings-section,
   audio {
     display: none !important;
   }

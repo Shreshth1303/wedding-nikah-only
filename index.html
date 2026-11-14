@@ -6,7 +6,7 @@
   <title>The Solemnization of Nikah | Jassim &amp; Shifa — 15th January 2027</title>
 
   <!-- Meta Tags for Sacred Celebration & SEO -->
-  <meta name="description" content="Under the grace of the Almighty, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim &amp; Shifa Anis Khan. Friday, 15th January 2027 at Bagai Banquet, Ashoka Marg, Nashik.">
+  <meta name="description" content="Under the grace of the Almighty Allah, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim &amp; Shifa Anis Khan. Friday, 15th January 2027 at Bagai Banquet, Ashoka Marg, Nashik.">
   <meta name="keywords" content="Jassim and Shifa Nikah, Islamic Wedding Invitation, Solemnization of Nikah, Bagai Banquet Nashik, Contemporary Architectural Editorial">
   <meta name="author" content="Hashim &amp; Khan Families">
   <meta name="theme-color" content="#F7F5F0">
@@ -14,23 +14,26 @@
   <!-- Open Graph / Social Sharing -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="The Solemnization of Nikah | Jassim &amp; Shifa — 15th January 2027">
-  <meta property="og:description" content="Under the grace of the Almighty, you are cordially invited to witness the Solemnization of Nikah of Jassim &amp; Shifa. Friday, 15th January 2027 at Bagai Banquet, Nashik.">
+  <meta property="og:description" content="Under the grace of the Almighty Allah, you are cordially invited to witness the Solemnization of Nikah of Jassim &amp; Shifa. Friday, 15th January 2027 at Bagai Banquet, Nashik.">
   <meta property="og:image" content="assets/favicon.svg">
 
   <!-- Architectural SVG Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2030">
-  <link rel="apple-touch-icon" href="assets/favicon.svg?v=2030">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2032">
+  <link rel="apple-touch-icon" href="assets/favicon.svg?v=2032">
 
   <!-- Google Fonts: Amiri (Arabic), Cinzel (Royal Display), Cormorant Garamond (Editorial Serif), Plus Jakarta Sans (UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Core Contemporary Architectural Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=2031">
+  <link rel="stylesheet" href="css/style.css?v=2032">
 </head>
 
 <body>
+
+  <!-- Ambient Gold Dust Canvas -->
+  <canvas id="ambient-gold-canvas" class="ambient-gold-canvas" aria-hidden="true"></canvas>
 
   <!-- Soothing Ambient Audio Stream & Native Preload -->
   <audio id="wedding-audio-element" 
@@ -41,6 +44,48 @@
          webkit-playsinline 
          autoplay 
          style="display: none;"></audio>
+
+  <!-- ========================================================================
+       0. BESPOKE ROYAL WAX SEAL ENVELOPE OPENING CEREMONY
+       ======================================================================== -->
+  <div id="envelope-ceremony-overlay" class="envelope-ceremony-overlay" role="dialog" aria-modal="true" aria-label="Royal Letterpress Invitation Opening">
+    <div class="envelope-modal-stage">
+      <div class="envelope-card-wrapper" id="envelope-wrapper">
+        <!-- Triangular Flap -->
+        <div class="envelope-flap" id="envelope-flap" aria-hidden="true"></div>
+
+        <!-- Royal 3D Burnished Bronze Wax Seal -->
+        <button type="button" class="wax-seal-button" id="btn-open-seal" aria-label="Tap wax seal to open invitation and play soothing music">
+          <div class="wax-seal-outer">
+            <div class="wax-seal-inner">
+              <span class="seal-kicker">NIKAH</span>
+              <span class="seal-monogram-initials">J ✦ S</span>
+              <span class="seal-date">15.01.2027</span>
+            </div>
+          </div>
+          <span class="seal-pulse-wave" aria-hidden="true"></span>
+        </button>
+
+        <!-- Envelope Front Inscription -->
+        <div class="envelope-front-body">
+          <div class="envelope-basmala-micro" lang="ar" dir="rtl">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+          <span class="envelope-call-kicker">THE SOLEMNIZATION OF NIKAH</span>
+          <h2 class="envelope-names">Jassim &amp; Shifa</h2>
+          <p class="envelope-tap-prompt">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Tap seal to unfold invitation &amp; play music</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Bypass Option -->
+      <button type="button" class="btn-skip-envelope" id="btn-skip-envelope">
+        View Invitation Directly &rarr;
+      </button>
+    </div>
+  </div>
 
   <!-- ========================================================================
        1. MINIMALIST FLOATING TOP BAR (COUNTDOWN REMOVED)
@@ -55,6 +100,7 @@
     <nav class="nav-menu" aria-label="Invitation Navigation">
       <a href="#invocation" class="nav-link">The Union</a>
       <a href="#venue" class="nav-link">Venue &amp; Details</a>
+      <a href="#blessings" class="nav-link">Blessings</a>
     </nav>
 
     <div class="nav-actions">
@@ -119,17 +165,26 @@
         <span class="kicker-rule"></span>
       </div>
 
+      <!-- Royal Interlocking Monogram Emblem -->
+      <div class="royal-monogram-seal" aria-hidden="true">
+        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" stroke="#9A7B4F" stroke-width="1" stroke-dasharray="2 3"/>
+          <circle cx="50" cy="50" r="41" stroke="#9A7B4F" stroke-width="0.75" stroke-opacity="0.6"/>
+          <text x="50" y="55" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="500" fill="#1C1917" text-anchor="middle" letter-spacing="2">J✦S</text>
+        </svg>
+      </div>
+
       <!-- Couple Names Display (Hero Focal Point in Cinzel Display) -->
       <div class="couple-editorial-display">
-        <h1 class="couple-title-name">Jassim Hashim</h1>
+        <h1 class="couple-title-name"><span class="gold-shimmer-text">Jassim Hashim</span></h1>
         <span class="couple-editorial-ampersand" aria-hidden="true">&amp;</span>
-        <h2 class="couple-title-name">Shifa Anis Khan</h2>
+        <h2 class="couple-title-name"><span class="gold-shimmer-text">Shifa Anis Khan</span></h2>
       </div>
 
       <!-- Elegant Framed Parentage Stationery Plaque -->
       <div class="parents-editorial-card">
         <p class="editorial-preamble">
-          Together with their beloved families,
+          Together with their beloved parents,
         </p>
 
         <!-- Balanced Two-Column Parentage Grid -->
@@ -270,7 +325,55 @@
     </section>
 
     <!-- ========================================================================
-         5. CLOSING DU'A FOOTER
+         5. SACRED DU'A & BLESSING WALL (INTERACTIVE GUESTBOOK)
+         ======================================================================== -->
+    <section class="blessings-section" id="blessings" aria-label="Prayers and Blessings for the Couple">
+      <div class="blessings-container">
+        <div class="blessings-header">
+          <span class="blessings-kicker">PRAYERS &amp; CELEBRATION</span>
+          <h3 class="blessings-title">Blessings for Jassim &amp; Shifa</h3>
+          <p class="blessings-subtitle">
+            Leave your heartfelt prayers, du’as, and congratulations for the couple as they begin their sacred journey together.
+          </p>
+        </div>
+
+        <!-- Quick One-Click Islamic Du'a Pills -->
+        <div class="blessings-quick-tags" aria-label="Suggested Du'as">
+          <button type="button" class="tag-pill" data-dua="بَارَكَ ٱللَّٰهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ">
+            بَارَكَ ٱللَّٰهُ لَكُمَا &bull; Prophetic Blessing
+          </button>
+          <button type="button" class="tag-pill" data-dua="May Allah bless your marriage with endless joy, love, and Sakinah.">
+            May Allah bless your marriage with Sakinah
+          </button>
+          <button type="button" class="tag-pill" data-dua="Wishing Jassim &amp; Shifa a lifetime of peace, barakah, and togetherness.">
+            Wishing you a lifetime of peace &amp; barakah
+          </button>
+        </div>
+
+        <!-- Interactive Submission Form -->
+        <form class="blessing-form" id="blessing-form">
+          <div class="form-inputs-row">
+            <input type="text" id="guest-name" class="input-editorial" placeholder="Your Name or Family (e.g. Tariq &amp; Family)" required maxlength="60">
+            <button type="submit" class="btn-submit-blessing" id="btn-submit-blessing">
+              <span>Send Du’a</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <textarea id="guest-message" class="textarea-editorial" placeholder="Write your personal prayer or congratulations for Jassim &amp; Shifa..." required rows="2" maxlength="280"></textarea>
+        </form>
+
+        <!-- Live Blessing Cards Stream -->
+        <div class="blessings-wall-grid" id="blessings-wall-grid">
+          <!-- Populated dynamically via JS from localStorage + initial curated blessings -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         6. CLOSING DU'A FOOTER
          ======================================================================== -->
     <footer class="editorial-footer" role="contentinfo">
       <!-- Prophetic Marital Blessing in Amiri -->
@@ -293,8 +396,8 @@
   </main>
 
   <!-- Ambient Audio Engine -->
-  <script src="js/audio-controller.js?v=2031"></script>
+  <script src="js/audio-controller.js?v=2032"></script>
   <!-- Interaction & Countdown Suite -->
-  <script src="js/main.js?v=2031"></script>
+  <script src="js/main.js?v=2032"></script>
 </body>
 </html>
