@@ -147,7 +147,7 @@ async function runTests() {
     // Retains Date, Time, Venue
     assert(html.includes('Friday, 15th January 2027'), 'Has wedding date');
     assert(html.includes('7 Rajab 1448 AH'), 'Has Hijri date');
-    assert(html.includes('11:30 AM'), 'Has Nikah start time');
+    assert(html.includes('7:00 PM'), 'Has Nikah start time');
     assert(html.includes('Bagai Banquet'), 'Has venue name');
     assert(html.includes('btn-add-calendar'), 'Has Add to Calendar action');
     assert(html.includes('btn-copy-address'), 'Has Copy Address action');

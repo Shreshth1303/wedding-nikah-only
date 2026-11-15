@@ -48,7 +48,7 @@ A serene, sacred-minimalist digital invitation designed under the philosophy of 
    - Direct action: **Open Venue in Google Maps** (`https://www.google.com/maps/search/?api=1&query=Bagai+Banquet+Ashoka+Marg+Nashik`).
    - Calendar Integration: **Google Calendar**, **Apple / Outlook (.ics file)**, and **Yahoo Calendar**.
    - One-click **Copy Venue Address** with feedback toast.
-   - Live **Countdown Timer** to Friday, 15th January 2027 at 11:30 AM IST.
+   - Live **Countdown Timer** to Friday, 15th January 2027 at 7:00 PM IST.
 
 5. **Melodious Background Music Engine (`js/audio-controller.js`):**
    - High-fidelity acoustic instrumentation:

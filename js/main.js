@@ -7,7 +7,7 @@
  * - 60fps Floating Golden Dust Ambient Canvas
  * - Live Architectural Chronometer (Countdown)
  * - Interactive Digital Du'a & Blessing Wall with Persistent Storage
- * - Dynamic .ics Calendar Generator for Jan 15, 2027 at 11:30 AM IST
+ * - Dynamic .ics Calendar Generator for Jan 15, 2027 at 7:00 PM IST
  * - Venue Address Clipboard with Real-Time Micro-Toast
  * - Archival Keepsake Print Engine
  */
@@ -146,10 +146,10 @@ function initEnvelopeCeremony() {
 
 /* ==========================================================================
    3. ARCHITECTURAL LIVE COUNTDOWN
-   Target: Friday, 15th January 2027 at 11:30 AM IST (UTC+05:30)
+   Target: Friday, 15th January 2027 at 7:00 PM IST (UTC+05:30)
    ========================================================================== */
 function initLiveCountdown() {
-  const targetDate = new Date('2027-01-15T11:30:00+05:30').getTime();
+  const targetDate = new Date('2027-01-15T19:00:00+05:30').getTime();
 
   const daysEl = document.getElementById('count-days');
   const hoursEl = document.getElementById('count-hours');
@@ -199,10 +199,10 @@ function initCalendarDownload() {
 
     const eventData = {
       title: 'Solemnization of Nikah: Jassim & Shifa',
-      description: "Under the grace of the Almighty Allah, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nDate: Friday, 15th January 2027 at 11:30 AM IST\\nVenue: Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik",
+      description: "Under the grace of the Almighty Allah, the families of Mr. Muhamed Hashim and Mr. Anis Asgar Khan cordially invite you to witness the Solemnization of Nikah of Jassim Hashim & Shifa Anis Khan.\\n\\nQuran Verse 78:8: 'And We created you in pairs'\\n\\nDate: Friday, 15th January 2027 at 7:00 PM IST\\nVenue: Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik",
       location: 'Bagai Banquet, Ashoka Marg, Kalpataru Nagar, Nashik, Maharashtra 422011',
-      startISO: '20270115T060000Z', // 11:30 AM IST is 06:00 AM UTC
-      endISO: '20270115T103000Z'    // 04:00 PM IST is 10:30 AM UTC
+      startISO: '20270115T133000Z', // 7:00 PM IST is 01:30 PM (13:30) UTC
+      endISO: '20270115T173000Z'    // 11:00 PM IST is 05:30 PM (17:30) UTC
     };
 
     const icsContent = [
